@@ -1,26 +1,52 @@
 import React, { useState } from 'react'
 import { View ,Image, TextInput,StyleSheet,Text, TouchableOpacity} from 'react-native';
 import LogHome from "../assets/log.webp";
+import axios from  "axios";
 
 
 function Login({navigation}) {
-    const [userName, setuserName] = useState("")
-    const [userPass, setuserPass] = useState("");
+    const [userdetail, setuserdetail] = useState({email :"",password:""});
+    const Url = `http://localhost:8000/login`;
+    const HandleLogin = async ()=>{
+        if(userdetail.email == "" || userdetail.password == ""){
+            alert("please Fill all the fields");
+            
+        }else{
+            if(userdetail.password.length <= 8){
+                try{
+                    
+                   await axios.post(Url, JSON.stringify({
+                    email:userdetail.name,
+                    password:userdetail.password
+                }))
+                .then((response)=>{
+                    console.log(reponse);
+                })
+            }catch(err){
+                console.log("failed to connect database", err);
 
-    const HandleLogin = ()=>{
-        navigation.push("Home");
+            }
+
+            }else{
+                alert("password must contain minimum 8 characters !!!");
+            }
+        }
     }
+    const HandleLo = ()=>{
+        navigation.push("Employees");
+    }
+
 
   return (
     <View style = {styles.LogMain}>
                 <Image source={LogHome} style ={styles.logImg}></Image>
         <View  style= {styles.logContainer}>
 
-        <TextInput style = {styles.fields} placeholder="username" value = {userName} onChangeText = {(txt)=>{setuserName(txt)}}></TextInput>
-        <TextInput style = {styles.fields} placeholder="password" value = {userPass} onChangeText = {(txt)=>{setuserPass(txt)}}></TextInput>
+        <TextInput style = {styles.fields} placeholder="username" value = {userdetail.email} onChangeText = {(txt)=>{setuserdetail({...userdetail,email :txt})}}></TextInput>
+        <TextInput style = {styles.fields} placeholder="password" value = {userdetail.password} onChangeText = {(txt)=>{setuserdetail({...userdetail,password:txt})}}></TextInput>
         <View style = {styles.btnContainer}>
             <TouchableOpacity onPress={HandleLogin}><Text style = {styles.logBtn} >Log In</Text></TouchableOpacity>
-            <TouchableOpacity ><Text style = {styles.logBtn}>Sign Up</Text></TouchableOpacity>
+            <TouchableOpacity onPress={HandleLo}><Text style = {styles.logBtn}>Sign Up</Text></TouchableOpacity>
         </View>
         <TouchableOpacity ><Text style = {{color:"red",letterSpacing:1,}}>forget password</Text></TouchableOpacity>
 

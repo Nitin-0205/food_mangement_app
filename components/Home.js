@@ -30,7 +30,7 @@ const Home = () => {
         <View style={styles.reqBox}>
           <View style={styles.box1}>
             <Text style={styles.reqId}>RequestId:</Text>
-            <Text style={styles.reqDetail}><Text style={{color:"tomato"}}>Name: </Text>Nitinjkjkj</Text>
+            <Text style={styles.reqDetail}><Text style={{color:"tomato"}}>Name: </Text>Ngo name</Text>
             <Text style={styles.reqDetail}><Text style={{color:"tomato"}}>FeedCount: </Text> 2</Text>
           </View>
           <View style={styles.box2}>
