@@ -3,10 +3,10 @@ import React, { Component } from 'react'
 import Navbar from './Navbar';
 
 
-const Head = (prop)=>{
+const Head = (navigation ,prop)=>{
     return (
       <View style = {styles.container}>
-        <TouchableOpacity><Text style = {styles.headNav}>--</Text></TouchableOpacity>
+        <TouchableOpacity ><Text style = {styles.headNav}>_____</Text></TouchableOpacity>
         <Text style = {styles.title}>{prop.title}</Text>
       </View>
     )

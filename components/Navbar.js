@@ -1,78 +1,86 @@
-import { Text, View,StyleSheet, TouchableOpacity,Image } from 'react-native'
-import React, { Component ,useState} from 'react';
-import LogHome from  "../assets/LogHome.png";
+import { Text, View, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native'
+import React, { Component, useState } from 'react';
+import LogHome from "../assets/LogHome.png";
 // import FontAwesome,{Geolocation} from  "react-native-fontawesome";
+import { useNavigation } from '@react-navigation/native';
 
 
 
-function Navbar ({navigation}) {
-    // const HandleNav = ()=>{
-    //     navigation.push("Login");
-    // }
+
+function Navbar({prop}) {
+    // const [tab ,setCurrentTab] = useState("Home");
+    const navigation = useNavigation()
+    const HandleNav = (scrn) => {
+        navigation.navigate(scrn)
+    }
 
     return (
-      <View style = {styles.container}>
-        <TouchableOpacity ><Text style = {styles.closeTabBtn}>X</Text></TouchableOpacity>
-        <Image source = {LogHome} style = {styles.NavImage}></Image>
-        <View style = {styles.NavBtnContainer}>
-            <TouchableOpacity ><Text style = {styles.NavBtn}>Restaurant Request</Text></TouchableOpacity>
-            <TouchableOpacity ><Text style = {styles.NavBtn}>NGO'S</Text></TouchableOpacity>
-            <TouchableOpacity ><Text style = {styles.NavBtn}>Employees</Text></TouchableOpacity>
-            <TouchableOpacity ><Text style = {styles.NavBtn}>Logout</Text></TouchableOpacity>
+        <View style={styles.container}>
+            {/* <TouchableOpacity ><Text style = {styles.closeTabBtn}>X</Text></TouchableOpacity> */}
+            <View style={styles.NavImageCont}><Image source={LogHome} style={styles.NavImage}></Image></View>
+            <View style={styles.NavBtnContainer}>
+                <TouchableOpacity onPress={()=>{HandleNav("Home");}}><Text style={styles.NavBtn}>Restaurant Request</Text></TouchableOpacity>
+                <TouchableOpacity onPress={()=>{HandleNav("Home");}}><Text style={styles.NavBtn}>NGO'S</Text></TouchableOpacity>
+                <TouchableOpacity onPress={()=>{HandleNav("Employees");}}><Text style={styles.NavBtn}>Employees</Text></TouchableOpacity>
+            </View>
+            <View style={{marginBottom:20}}>
+                <TouchableOpacity onPress={() => { HandleNav }}><Text style={styles.NavBtn}>Logout</Text></TouchableOpacity>
+
+            </View>
         </View>
-      </View>
     )
 }
 const styles = StyleSheet.create({
-    container:{
-        position:"absolute",
-        zIndex:10,
-        // left:"-50%",
-        width:"80%",
-        // height:"100%",
-        alignSelf:"flex-start",
-        backgroundColor:"#CCFCE2",
-        borderColor:"lightgray",
-        borderWidth:1,
-        // justifyContent:"center",
-        // alignItems:"center"
+    container: {
+        position: "relative",
+        flexGrow: 1,
+        left: 0,
+        top: 0,
+        backgroundColor: "#CCFCE2",
+        borderColor: "lightgray",
+        borderWidth: 1,
     },
-    closeTabBtn:{
-        position:"absolute",
-        right :10,
-        top:10,
-        backgroundColor:"#A0E1BE",
-        width:40,
-        height:40,
-        borderRadius:5,
-        color:"white",
-        fontSize:25,
-        textAlign:"center",
-        textAlignVertical:"center",
-        borderColor:"#A4A4A4",
-        borderWidth:2,
-        zIndex:5,
+    closeTabBtn: {
+        position: "absolute",
+        right: 10,
+        top: 10,
+        backgroundColor: "#A0E1BE",
+        width: 40,
+        height: 40,
+        borderRadius: 5,
+        color: "white",
+        fontSize: 25,
+        textAlign: "center",
+        textAlignVertical: "center",
+        borderColor: "#A4A4A4",
+        borderWidth: 2,
+        zIndex: 5,
     },
-    NavImage:{
-        marginTop:50,
-        alignSelf:"center",
-        height:200,
-        width:200,
+    NavImageCont: {
+        marginTop: 50,
+        width: 250,
     },
-    NavBtnContainer:{
-        marginTop:60,
+    NavImage: {
+        // alignSelf:"center",
+        resizeMode: "center",
     },
-    NavBtn:{
-        fontSize:20,
-        color:"white",
-        backgroundColor:"#35AF75",
-        zIndex:1,
-        textAlignVertical:"center",
-        paddingHorizontal:10,
-        paddingVertical:5,
-        margin:5,
-        borderColor:"gray",
-        borderWidth:2,
+    NavBtnContainer: {
+        marginTop: 60,
+        flexGrow:1,
+    },
+    NavBtn: {
+        width: 250,
+        fontSize: 20,
+        color: "white",
+        backgroundColor: "#35AF75",
+        zIndex: 1,
+        textAlignVertical: "center",
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        margin: 5,
+        // borderColor:"green",
+        borderWidth: 0,
+        borderRadius: 5,
 
 
     },

@@ -1,42 +1,146 @@
-import { View, Text, TouchableOpacity ,StyleSheet, ScrollView, Image} from 'react-native'
-import React from 'react'
+import { View, Text, TouchableOpacity ,StyleSheet, ScrollView, Image,Animated} from 'react-native'
+import React, { useState ,useEffect,useRef} from 'react'
 import newEmp from "../assets/newEmp.png";
-
+import axios from 'axios';
+import Navbar from './Navbar';
 
 
 const Employee = ({navigation}) => {
-  const HandlePress = ()=>{
-    navigation.push("AddEmp")
+  const [empDetail ,setEmpdetail] = useState([]);
+  const [errmsg,seterrmsg] = useState([]);
+  const [showMenu, setShowMenu] = useState(false);
+
+  const offsetValue = useRef(new Animated.Value(0)).current;
+  const scaleValue = useRef(new Animated.Value(1)).current;
+  const closeBtnOffset = useRef(new Animated.Value(0)).current;
+
+
+  const MenuBtnFunc= (navigation) => {
+
+    Animated.timing(scaleValue, {
+      toValue: showMenu ? 1:0.88,
+      duration: 300,
+      useNativeDriver:true,
+    })
+    .start()
+    Animated.timing(offsetValue, {
+      toValue: showMenu ? 0:290,
+      duration: 300,
+      useNativeDriver:true,
+    })
+      .start()
+      setShowMenu(!showMenu)
+  }
+  const getEmployeeDetail = async ()=>{
+    const url = `http://192.168.31.203:8000/Employees`;
+    try{
+      await axios.get(url)
+      .then((res)=>{
+        if(res.status == 200){
+          setEmpdetail(res.data)
+        }else{
+          seterrmsg(res.error);
+        }
+      })
+    }catch(error){
+      console.log("Something Went Wrong ",error)
+    }
 
   }
+  useEffect(()=>{
+    getEmployeeDetail();
+  },[])
+  const HandlePress = ()=>{
+    navigation.push("AddEmp")
+  }
   return (
-    <View style = {styles.container}>
-      <ScrollView style = {styles.butCont}>
-        <View style = {styles.EmpBox}>
-        <Text><Text style = {{color:"blue"}}>Employee ID:</Text></Text>
-          <Text><Text style = {{color:"blue"}}>Name:</Text></Text>
-          <Text><Text style = {{color:"blue"}}>Contact:</Text></Text>
-        </View>
+    <View style={styles.MainContainer}>
+      <Navbar></Navbar>
 
-        <View style = {styles.EmpBox}>
-        <Text><Text style = {{color:"blue"}}>Employee ID:</Text></Text>
-          <Text><Text style = {{color:"blue"}}>Name:</Text></Text>
-          <Text><Text style = {{color:"blue"}}>Contact:</Text></Text>
+    <Animated.View style={{
+      paddingTop: 30,
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      flexGrow: 1,
+      backgroundColor: "white",
+      alignItems: "center",
+      borderRadius: showMenu ? 15:0,
+      transform:[
+        {scale:scaleValue},
+        {translateX:offsetValue}
+      ],
+    }}>
+      <View style={styles.Head}>
+          <TouchableOpacity onPress={MenuBtnFunc}><Text style={styles.headNav}>_____</Text></TouchableOpacity>
+          <Text style={styles.title}>Employee's Detail</Text>
         </View>
-
-        <View style = {styles.EmpBox}>
-        <Text><Text style = {{color:"blue"}}>Employee ID:</Text></Text>
-          <Text><Text style = {{color:"blue"}}>Name:</Text></Text>
-          <Text><Text style = {{color:"blue"}}>Contact:</Text></Text>
-        </View>
+      <ScrollView style = {styles.detailContainer}>
+        {
+          empDetail.map((emp)=>{
+            return <View style = {styles.EmpBox} key = {emp.Id}>
+          <Text><Text style = {{color:"gray"}}>Employee ID: {emp.EmpId}</Text></Text>
+            <Text><Text style = {{color:"blue",fontSize:18,marginVertical:10}}>Name: {emp.Name}</Text></Text>
+            <Text><Text style = {{color:"red",fontSize:15,marginVertical:10}}>Contact: {emp.Contact}</Text></Text>
+          </View>
+          })
+        }
       </ScrollView>
       <TouchableOpacity style = {styles.addEmpCont} onPress={HandlePress}><Image source = {newEmp} style = {styles.addEmp}></Image></TouchableOpacity>
+    </Animated.View>
     </View>
   )
 }
 const styles = StyleSheet.create({
+  MainContainer: {
+    position: 'absolute',
+    flexGrow: 1,
+    paddingTop: 30,
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+
+  },
   container:{
-    flex:1,
+    flexGrow:1,
+    position:"relative",
+    backgroundColor:"blue",
+  },
+  Head: {
+    zIndex: 1,
+    // position:"absolute",
+    // top:30,
+    // left:0,
+    width: "100%",
+    padding: 5,
+    backgroundColor: "#2374D3",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 13,
+  },
+  headNav: {
+    color: "white",
+    padding: 5,
+    width: 40,
+    height: 40,
+    backgroundColor: "#2374D3",
+    borderColor: "white",
+    borderWidth: 1,
+    borderRadius: 5,
+    marginLeft: 5,
+  },
+  title: {
+    color: "white",
+    fontSize: 25,
+    marginLeft: 15,
+  },
+  detailContainer:{
+    backgroundColor:"white",
+    width:"100%",
+    padding:10,
   },
   EmpBox:{
     width:"98%",
@@ -46,8 +150,10 @@ const styles = StyleSheet.create({
     backgroundColor:"azure",
     borderBottomColor:"lightgray",
     borderBottomWidth:3,
+    borderRadius:5,
   },
-  addEmpCont:{width:60,
+  addEmpCont:{
+    width:60,
     height:60,
     position:"absolute",
     bottom:20,
