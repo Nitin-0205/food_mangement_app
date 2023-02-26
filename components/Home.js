@@ -1,109 +1,132 @@
-import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, ScrollView ,Animated} from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, ScrollView, Animated } from 'react-native'
 import React, { useEffect, useRef } from 'react';
 import Head from "./Head"
 import { useState } from 'react';
 import Navbar from './Navbar';
 import axios from 'axios';
 // import Animated from 'react-native-reanimated';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faBars, faFilter, faFilterCircleDollar, faFilterCircleXmark, faLocationPin, faRefresh, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCalendar } from '@fortawesome/free-regular-svg-icons';
+
+
+
 
 const Home = (navigation) => {
   const [filter, setfilter] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-  const [errmsg,seterrmsg] = useState();
-  const [reqfoodData,setreqfoodData] = useState([]);
+  const [errmsg, seterrmsg] = useState();
+  const [showOther,setShowOther] = useState(false);
+  const [reqfoodData, setreqfoodData] = useState([]);
   const offsetValue = useRef(new Animated.Value(0)).current;
   const scaleValue = useRef(new Animated.Value(1)).current;
   const closeBtnOffset = useRef(new Animated.Value(0)).current;
 
-  
-  const MenuBtnFunc= (navigation) => {
+
+  const MenuBtnFunc = (navigation) => {
 
     Animated.timing(scaleValue, {
-      toValue: showMenu ? 1:0.88,
+      toValue: showMenu ? 1 : 0.88,
       duration: 300,
-      useNativeDriver:true,
-    })
-    .start()
-    Animated.timing(offsetValue, {
-      toValue: showMenu ? 0:290,
-      duration: 300,
-      useNativeDriver:true,
+      useNativeDriver: true,
     })
       .start()
-      setShowMenu(!showMenu)
-  }
-  
-  const getReqData = async()=>{
-    const Url = `http://192.168.31.203:8000/getfood`;
-    try{
-      await axios.get(url)
-      .then((res)=>{
-        if(res.status == 200){
-          setreqfoodData(res.data)
-        }else{
-          seterrmsg(res.error);
-        }
+    Animated.timing(offsetValue, {
+      toValue: showMenu ? 0 : 290,
+      duration: 300,
+      useNativeDriver: true,
+    })
+      .start()
+    Animated.timing(closeBtnOffset, {
+        toValue: showMenu ? -30 : 0,
+        duration: 300,
+        useNativeDriver: true,
       })
-    }catch(error){
-      console.log("Something Went Wrong ",error)
+        .start()
+    setShowMenu(!showMenu)
+  }
+
+  const getReqData = async () => {
+    const Url = `http://192.168.31.203:8000/getfood`;
+    try {
+      await axios.get(Url)
+        .then((res) => {
+          if (res.status == 200) {
+            setreqfoodData(res.data)
+          } else {
+            seterrmsg(res.error);
+          }
+        })
+    } catch (error) {
+      console.log("Something Went Wrong ", error)
     }
   }
-  useEffect(()=>{
+  useEffect(() => {
+    if(showOther){
+      getReqData();
+    }else{
+      getReqData();
+    }
 
-  },[])
+  }, [reqfoodData])
 
   return (
     <View style={styles.MainContainer}>
       <Navbar ></Navbar>
       <Animated.View style={{
-    paddingTop: 30,
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    flexGrow: 1,
-    backgroundColor: "white",
-    alignItems: "center",
-    borderRadius: showMenu ? 15:0,
-    transform:[
-      {scale:scaleValue},
-      {translateX:offsetValue}
-    ],
-  }}>
+        paddingTop: 30,
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 0,
+        bottom: 0,
+        flexGrow: 1,
+        backgroundColor: "white",
+        alignItems: "center",
+        borderRadius: showMenu ? 15 : 0,
+        transform: [
+          { scale: scaleValue },
+          { translateX: offsetValue }
+        ],
+      }}>
         <View style={styles.Head}>
-          <TouchableOpacity onPress={MenuBtnFunc}><Text style={styles.headNav}>_____</Text></TouchableOpacity>
+          <TouchableOpacity onPress={MenuBtnFunc}><View style={styles.headNav}><FontAwesomeIcon color = "white"  size = {32} icon ={showMenu?faXmark: faBars}></FontAwesomeIcon></View></TouchableOpacity>
           <Text style={styles.title}>NGO's Request</Text>
         </View>
-        <View style={[styles.butCont,styles.shadow]}>
-        <TouchableOpacity><Text style={styles.btn}>Other NGO's</Text></TouchableOpacity>
+        <View style={[styles.butCont, styles.shadow]}>
+          <TouchableOpacity><Text style={styles.btn}>Other NGO's</Text></TouchableOpacity>
           <TouchableOpacity><Text style={styles.btn}>My Request</Text></TouchableOpacity>
         </View>
-        <TouchableOpacity><Text style={[styles.fltr]} onPress={() => { setfilter(!filter) }}>Filter </Text></TouchableOpacity>
+        <TouchableOpacity><Text style={[styles.fltr]} onPress={() => { setfilter(!filter) }}><FontAwesomeIcon icon ={faFilter}></FontAwesomeIcon> Filter </Text></TouchableOpacity>
 
         {
           filter ? <View style={styles.filtercontainer}>
-            <View style={[styles.filterBox,styles.shadow]}>
-              <TouchableOpacity><Text style={styles.filterBtn}>Recent</Text></TouchableOpacity>
-              <TouchableOpacity><Text style={styles.filterBtn}>Date</Text></TouchableOpacity>
-              <TouchableOpacity><Text style={styles.filterBtn}>Location</Text></TouchableOpacity>
+            <View style={[styles.filterBox, styles.shadow]}>
+              <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon ={faRefresh}></FontAwesomeIcon> Recent</Text></TouchableOpacity>
+              <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon ={faCalendar}></FontAwesomeIcon> Date</Text></TouchableOpacity>
+              <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon ={faLocationPin}></FontAwesomeIcon> Location</Text></TouchableOpacity>
 
             </View>
 
           </View> : <></>
         }
         <ScrollView style={styles.requestCont}>
-          <View style={styles.reqBox}>
-            <View style={styles.box1}>
-              <Text style={styles.reqId}>RequestId:</Text>
-              <Text style={styles.reqDetail}><Text style={{ color: "tomato" }}>Name: </Text>Ngo name</Text>
-              <Text style={styles.reqDetail}><Text style={{ color: "tomato" }}>FeedCount: </Text> 2</Text>
-            </View>
-            <View style={styles.box2}>
-              <TouchableOpacity><Text style={styles.reqStateBtn}>Pending</Text></TouchableOpacity>
-              <Text style={styles.date}>02/05/2022</Text>
-            </View>
-          </View>
+          {reqfoodData.map((data) => {
+            return (
+              <View style={[styles.reqBox,styles.shadow]} >
+                <View style={styles.box1}>
+                  <Text style={styles.reqId}>RequestId:</Text>
+                  <Text style={styles.reqDetail}><Text style={{ color: "royalblue" ,fontWeight:"700"}}>Name: </Text>Ngo name</Text>
+                  <Text style={styles.reqDetail}><Text style={{ color: "royalblue" ,fontWeight:"700" }}>FeedCount: </Text> {data.Feedcount}</Text>
+                  <Text style={styles.reqDetail}><Text style={{ color: "royalblue" ,fontWeight:"700" }}>City: </Text> {data.City}</Text>
+                </View>
+                <View style={styles.box2}>
+                  <TouchableOpacity><Text style={[styles.reqStateBtn,{color:data.Status == "Pending" ?"red":"green"}]}>{data.Status}</Text></TouchableOpacity>
+                  <Text style={styles.date}>{data.Date}  {data.Time}</Text>
+                </View>
+              </View>
+            )
+          })}
         </ScrollView>
       </Animated.View>
     </View>
@@ -130,7 +153,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: "white",
     alignItems: "center",
-    
+
   },
   Head: {
     zIndex: 1,
@@ -147,13 +170,13 @@ const styles = StyleSheet.create({
   headNav: {
     color: "white",
     padding: 5,
-    width: 40,
-    height: 40,
+    borderWidth:2 ,
     backgroundColor: "#2374D3",
     borderColor: "white",
     borderWidth: 1,
-    borderRadius: 5,
-    marginLeft: 5,
+    borderRadius: 4,
+
+    // marginLeft: 5,
   },
   title: {
     color: "white",
@@ -166,17 +189,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
     backgroundColor: "white",
-    
+
   },
-  shadow:{
-    shadowColor:"#000",
-    shadowOffset:{
-      width:0,
-      height:10,
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 10,
     },
-    shadowOpacity:0.5,
-    shadowRadius:3.84,
-    elevation:5,
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+    elevation: 5,
 
   },
   btn: {
@@ -197,36 +220,37 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingVertical: 6,
     marginTop: 20,
-    borderRadius:5,
+    borderRadius: 5,
   },
   filtercontainer: {
     position: 'absolute',
-    top:'50%',
+    top: '50%',
     justifyContent: "center",
     alignItems: "center",
-    zIndex:5,
+    zIndex: 5,
   },
-  filterBox:{
-    backgroundColor:"#e6fff2",
-    padding:10,
-    borderRadius:10,
-    width:200,
-    height:150,
-    position:'relative',
-    justifyContent:"space-evenly",
+  filterBox: {
+    backgroundColor: "#e6fff2",
+    padding: 10,
+    borderRadius: 10,
+    width: 200,
+    height: 150,
+    position: 'relative',
+    justifyContent: "space-evenly",
   },
-  filterBtn:{
-    fontSize:15,
-    borderBottomColor:"lightblue",
-    borderBottomWidth:1,
-    padding:6,
+  filterBtn: {
+    fontSize: 15,
+    borderBottomColor: "lightblue",
+    borderBottomWidth: 1,
+    padding: 6,
 
-  
+
   },
   requestCont: {
     width: "100%",
     paddingVertical: 20,
     flexDirection: "column",
+    marginTop:5,
   },
   reqBox: {
     alignSelf: "center",
@@ -234,7 +258,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 10,
     width: "90%",
-    borderRadius: 10,
+    borderRadius: 5,
     flexDirection: "row",
     justifyContent: "space-between",
     backgroundColor: "lightblue",
@@ -257,9 +281,10 @@ const styles = StyleSheet.create({
   reqStateBtn: {
     paddingVertical: 5,
     paddingHorizontal: 13,
-    borderColor: "tomato",
+    borderColor: "gray",
     borderRadius: 5,
-    borderWidth: 2,
+    borderWidth: 1,
+    // backgroundColor:"white",
     color: "red",
     textTransform: "uppercase",
   },

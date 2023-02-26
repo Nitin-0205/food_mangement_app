@@ -1,8 +1,9 @@
 import { Text, View, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native'
 import React, { Component, useState } from 'react';
 import LogHome from "../assets/LogHome.png";
-// import FontAwesome,{Geolocation} from  "react-native-fontawesome";
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
+import {  faBuildingNgo, faCodeFork, faDoorOpen, faHotel, faObjectGroup, faPeopleGroup, faPlateWheat } from '@fortawesome/free-solid-svg-icons';
 
 
 
@@ -19,12 +20,12 @@ function Navbar({prop}) {
             {/* <TouchableOpacity ><Text style = {styles.closeTabBtn}>X</Text></TouchableOpacity> */}
             <View style={styles.NavImageCont}><Image source={LogHome} style={styles.NavImage}></Image></View>
             <View style={styles.NavBtnContainer}>
-                <TouchableOpacity onPress={()=>{HandleNav("Home");}}><Text style={styles.NavBtn}>Restaurant Request</Text></TouchableOpacity>
-                <TouchableOpacity onPress={()=>{HandleNav("Home");}}><Text style={styles.NavBtn}>NGO'S</Text></TouchableOpacity>
-                <TouchableOpacity onPress={()=>{HandleNav("Employees");}}><Text style={styles.NavBtn}>Employees</Text></TouchableOpacity>
+                <TouchableOpacity onPress={()=>{HandleNav("Home");}}><Text style={styles.NavBtn}><FontAwesomeIcon style={styles.NavBtn} color = "white" size={25} icon = {faPlateWheat}></FontAwesomeIcon> Restaurant Request</Text></TouchableOpacity>
+                <TouchableOpacity onPress={()=>{HandleNav("Home");}}><Text style={styles.NavBtn}><FontAwesomeIcon style={styles.NavBtn} color = "white" size={25} icon = {faBuildingNgo}></FontAwesomeIcon> NGO'S</Text></TouchableOpacity>
+                <TouchableOpacity onPress={()=>{HandleNav("Employees");}}><Text style={styles.NavBtn}><FontAwesomeIcon style={styles.NavBtn} color = "white" size={25} icon = {faPeopleGroup}></FontAwesomeIcon> Employees</Text></TouchableOpacity>
             </View>
             <View style={{marginBottom:20}}>
-                <TouchableOpacity onPress={() => { HandleNav }}><Text style={styles.NavBtn}>Logout</Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => { HandleNav("Login")}}><Text style={styles.NavBtn}><FontAwesomeIcon style={styles.NavBtn} color = "white" size={25} icon = {faDoorOpen}></FontAwesomeIcon> Logout</Text></TouchableOpacity>
 
             </View>
         </View>
@@ -74,11 +75,10 @@ const styles = StyleSheet.create({
         color: "white",
         backgroundColor: "#35AF75",
         zIndex: 1,
-        textAlignVertical: "center",
+        textAlignVertical:"top",
         paddingHorizontal: 10,
         paddingVertical: 8,
         margin: 5,
-        // borderColor:"green",
         borderWidth: 0,
         borderRadius: 5,
 

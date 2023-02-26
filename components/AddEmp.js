@@ -4,6 +4,8 @@ import employee from "../assets/employee.png";
 import { useState } from 'react';
 import axios from 'axios';
 import newEmp from "../assets/newEmp.png";
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faArrowLeftLong, faArrowsLeftRightToLine, faBackward } from '@fortawesome/free-solid-svg-icons';
 
 
 const AddEmp = ({ navigation }) => {
@@ -61,10 +63,10 @@ const AddEmp = ({ navigation }) => {
 
       </View>
       <View style = {styles.btnContainer}>
-            <TouchableOpacity onPress={HandlePress}><Text style = {styles.logBtn} >Save Detail</Text></TouchableOpacity>
-            <TouchableOpacity onPress={resetFunc}><Text style = {styles.logBtn}>Reset</Text></TouchableOpacity>
+            <TouchableOpacity onPress={HandlePress}><Text style = {styles.savbtn} >Save Detail</Text></TouchableOpacity>
+            <TouchableOpacity onPress={resetFunc}><Text style = {styles.savbtn}>Reset</Text></TouchableOpacity>
         </View>
-      <TouchableOpacity style={styles.backCont} onPress={HandlePress}><Image source={newEmp} style={styles.backEmp}></Image></TouchableOpacity>
+      <TouchableOpacity style={styles.backCont} onPress={()=>{navigation.push("Employees")}}><FontAwesomeIcon  style={styles.backEmp} size = {30} color = "white" icon = {faArrowLeftLong}></FontAwesomeIcon></TouchableOpacity>
 
     </View>
   )
@@ -116,26 +118,29 @@ const styles = StyleSheet.create({
     justifyContent:'center'
 
 },
-logBtn:{
+savbtn:{
     backgroundColor:"#4687C2",
     padding:8,
     width:110,
     color:"white",
     textAlign:'center',
     fontSize:16,
-    borderColor:"gray",
+    borderColor:"lightgray",
     borderRadius:5,
     borderWidth:2,
     marginHorizontal:15,
 },
   backCont: {
     width: 60,
-    height: 60,
+    height: 50,
     position: "absolute",
     bottom: 20,
     right: 20,
+
+    justifyContent:"center",
+    alignItems:"center",
     backgroundColor: "royalblue",
-    borderRadius: 30,
+    borderRadius: 20,
     borderColor: "royalblue",
     borderWidth: 1,
     padding: 5,
@@ -143,7 +148,18 @@ logBtn:{
   backEmp: {
     width: "100%",
     height: "100%",
-  }
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+    elevation: 5,
+
+  },
 })
 
 export default AddEmp;

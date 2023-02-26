@@ -1,6 +1,9 @@
 import { View, Text, TouchableOpacity ,StyleSheet, ScrollView, Image,Animated} from 'react-native'
 import React, { useState ,useEffect,useRef} from 'react'
 import newEmp from "../assets/newEmp.png";
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
+
 import axios from 'axios';
 import Navbar from './Navbar';
 
@@ -74,13 +77,13 @@ const Employee = ({navigation}) => {
       ],
     }}>
       <View style={styles.Head}>
-          <TouchableOpacity onPress={MenuBtnFunc}><Text style={styles.headNav}>_____</Text></TouchableOpacity>
+      <TouchableOpacity onPress={MenuBtnFunc}><View style={styles.headNav}><FontAwesomeIcon color = "white"  size = {32} icon ={showMenu?faXmark: faBars}></FontAwesomeIcon></View></TouchableOpacity>
           <Text style={styles.title}>Employee's Detail</Text>
         </View>
       <ScrollView style = {styles.detailContainer}>
         {
           empDetail.map((emp)=>{
-            return <View style = {styles.EmpBox} key = {emp.Id}>
+            return <View style = {styles.EmpBox} key = {emp.Contact}>
           <Text><Text style = {{color:"gray"}}>Employee ID: {emp.EmpId}</Text></Text>
             <Text><Text style = {{color:"blue",fontSize:18,marginVertical:10}}>Name: {emp.Name}</Text></Text>
             <Text><Text style = {{color:"red",fontSize:15,marginVertical:10}}>Contact: {emp.Contact}</Text></Text>
@@ -124,13 +127,11 @@ const styles = StyleSheet.create({
   headNav: {
     color: "white",
     padding: 5,
-    width: 40,
-    height: 40,
+    borderWidth:2 ,
     backgroundColor: "#2374D3",
     borderColor: "white",
     borderWidth: 1,
-    borderRadius: 5,
-    marginLeft: 5,
+    borderRadius: 4,
   },
   title: {
     color: "white",
