@@ -6,13 +6,12 @@ import Navbar from './Navbar';
 import axios from 'axios';
 // import Animated from 'react-native-reanimated';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBars, faFilter, faFilterCircleDollar, faFilterCircleXmark, faLocationPin, faRefresh, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { faCalendar } from '@fortawesome/free-regular-svg-icons';
+import { faBars, faBowlFood, faCodePullRequest, faFilter, faFilterCircleDollar, faFilterCircleXmark, faLocationPin, faNoteSticky, faRefresh, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCalendar, faStickyNote } from '@fortawesome/free-regular-svg-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-
-
-const Home = (navigation) => {
+const Home = ({navigation}) => {
   const [filter, setfilter] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [errmsg, seterrmsg] = useState();
@@ -22,6 +21,7 @@ const Home = (navigation) => {
   const scaleValue = useRef(new Animated.Value(1)).current;
   const closeBtnOffset = useRef(new Animated.Value(0)).current;
 
+  const [userCredential,setuserCredential] = useState({});
 
   const MenuBtnFunc = (navigation) => {
 
@@ -49,6 +49,7 @@ const Home = (navigation) => {
   const getReqData = async () => {
     const Url = `http://192.168.31.203:8000/getfood`;
     try {
+      const bd = {userId: showOther?null:userCredential._id}
       await axios.get(Url)
         .then((res) => {
           if (res.status == 200) {
@@ -67,12 +68,15 @@ const Home = (navigation) => {
     }else{
       getReqData();
     }
+    
 
   }, [reqfoodData])
+  AsyncStorage.getItem("UserLoginCredentials").then((result)=>{setuserCredential(result)}).catch((err) =>{console.log(err)})
+
 
   return (
     <View style={styles.MainContainer}>
-      <Navbar ></Navbar>
+      <Navbar key = {1}></Navbar>
       <Animated.View style={{
         paddingTop: 30,
         position: 'absolute',
@@ -113,7 +117,7 @@ const Home = (navigation) => {
         <ScrollView style={styles.requestCont}>
           {reqfoodData.map((data) => {
             return (
-              <View style={[styles.reqBox,styles.shadow]} >
+              <View style={[styles.reqBox,styles.shadow]} key = {data._id} >
                 <View style={styles.box1}>
                   <Text style={styles.reqId}>RequestId:</Text>
                   <Text style={styles.reqDetail}><Text style={{ color: "royalblue" ,fontWeight:"700"}}>Name: </Text>Ngo name</Text>
@@ -128,6 +132,8 @@ const Home = (navigation) => {
             )
           })}
         </ScrollView>
+        <TouchableOpacity style = {styles.foodReqBtnCont} onPress={()=>{navigation.push("FoodReqRaise")}}><FontAwesomeIcon  style={styles.ReqBtn} size = {30} color = "white" icon = {faStickyNote}></FontAwesomeIcon></TouchableOpacity>
+
       </Animated.View>
     </View>
   )
@@ -293,7 +299,26 @@ const styles = StyleSheet.create({
     color: 'green',
     fontSize: 12,
 
-  }
+  },
+  foodReqBtnCont: {
+    width: 60,
+    height: 60,
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+
+    justifyContent:"center",
+    alignItems:"center",
+    backgroundColor: "#ff9933",
+    borderRadius: 5,
+    borderColor: "gray",
+    borderWidth: 1,
+    padding: 5,
+  },
+  ReqBtn: {
+    width: "100%",
+    height: "100%",
+  },
 
 
 })

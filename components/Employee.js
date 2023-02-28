@@ -58,7 +58,7 @@ const Employee = ({navigation}) => {
   }
   return (
     <View style={styles.MainContainer}>
-      <Navbar></Navbar>
+      <Navbar key = {3}></Navbar>
 
     <Animated.View style={{
       paddingTop: 30,

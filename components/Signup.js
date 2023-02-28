@@ -77,9 +77,15 @@ function Signup() {
   }, [])
   const handleSubmit = async () => {
     const URL = `http://192.168.31.203:8000/signup`;
-    if (detail.email == "" || detail.name == "" || detail.contact == "" || detail.roleChoose == "" ||
-      detail.cityChoose == "" || detail.address == "") {
+    if (detail.email == "" || detail.name == "" || detail.contact == "" || detail.address == "") {
       alert("All fields are required !!!");
+    }else if(roleChoose == undefined ||
+      cityChoose == undefined) {
+        if(roleChoose == undefined){
+          alert("Please Select Role !!!")
+        }else{
+          alert("Please Select City !!!")
+        }
     } else {
       if (detail.password !== detail.conPassword) {
         alert("Password Must be Same !!!");
@@ -90,8 +96,8 @@ function Signup() {
           email: detail.email,
           name: detail.name,
           contact: detail.contact,
-          roleChoose: roleChoose,
-          cityChoose: cityChoose,
+          role: roleChoose,
+          city: cityChoose,
           address: detail.address,
           password: detail.password,
 
@@ -141,7 +147,7 @@ function Signup() {
             inputSearchStyle={styles.inputSearchStyle}
             iconStyle={styles.iconStyle}
             data={Role}
-            search
+            // search
             maxHeight={300}
             labelField="value"
             valueField="value"
