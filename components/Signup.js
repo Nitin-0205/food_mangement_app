@@ -45,7 +45,7 @@ function Signup() {
 
   const Role = [
     { label: 'NGO', value: 'NGO' },
-    { label: 'Restaurents/ Others', value: 'Restaurents/ Others' },
+    { label: 'Restaurents/ Others', value: 'OTH' },
   ];
 
 
@@ -75,6 +75,7 @@ function Signup() {
         console.log(e)
       })
   }, [])
+  
   const handleSubmit = async () => {
     const URL = `http://192.168.31.203:8000/signup`;
     if (detail.email == "" || detail.name == "" || detail.contact == "" || detail.address == "") {
@@ -149,7 +150,7 @@ function Signup() {
             data={Role}
             // search
             maxHeight={300}
-            labelField="value"
+            labelField="label"
             valueField="value"
             placeholder={!isroleFocus ? 'Select Role' : '...'}
             searchPlaceholder="Search..."
@@ -158,7 +159,7 @@ function Signup() {
             onBlur={() => setIsRoleFocus(false)}
             onChange={item => {
               setRole(item.value);
-              console.log(item)
+              console.log(roleChoose)
               setIsRoleFocus(false);
             }}
             renderLeftIcon={() => (

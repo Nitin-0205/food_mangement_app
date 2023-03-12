@@ -1,59 +1,36 @@
-import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, ScrollView, Animated } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, ScrollView, Animated, Button } from 'react-native'
 import React, { useEffect, useRef } from 'react';
 import Head from "./Head"
 import { useState } from 'react';
 import Navbar from './Navbar';
 import axios from 'axios';
-// import Animated from 'react-native-reanimated';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBars, faBowlFood, faCodePullRequest, faFilter, faFilterCircleDollar, faFilterCircleXmark, faLocationPin, faNoteSticky, faRefresh, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { faCalendar, faStickyNote } from '@fortawesome/free-regular-svg-icons';
+import { faBars, faBowlFood, faCheckSquare, faClipboardList, faCodePullRequest, faFilter, faFilterCircleDollar, faFilterCircleXmark, faIdBadge, faLocationPin, faNoteSticky, faRefresh, faSquareCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faCalendar, faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
-const Home = ({navigation}) => {
+const Home = ({ navigation }) => {
   const [filter, setfilter] = useState(false);
-  const [showMenu, setShowMenu] = useState(false);
   const [errmsg, seterrmsg] = useState();
-  const [showOther,setShowOther] = useState(false);
+  const [showOther, setShowOther] = useState(false);
   const [reqfoodData, setreqfoodData] = useState([]);
-  const offsetValue = useRef(new Animated.Value(0)).current;
-  const scaleValue = useRef(new Animated.Value(1)).current;
-  const closeBtnOffset = useRef(new Animated.Value(0)).current;
+  const [status, setStatus] = useState(0);
+  const [ReqDetail, showReqDetail] = useState(false)
+  const [userCredential, setuserCredential] = useState({});
 
-  const [userCredential,setuserCredential] = useState({});
 
-  const MenuBtnFunc = (navigation) => {
-
-    Animated.timing(scaleValue, {
-      toValue: showMenu ? 1 : 0.88,
-      duration: 300,
-      useNativeDriver: true,
-    })
-      .start()
-    Animated.timing(offsetValue, {
-      toValue: showMenu ? 0 : 290,
-      duration: 300,
-      useNativeDriver: true,
-    })
-      .start()
-    Animated.timing(closeBtnOffset, {
-        toValue: showMenu ? -30 : 0,
-        duration: 300,
-        useNativeDriver: true,
-      })
-        .start()
-    setShowMenu(!showMenu)
-  }
-
-  const getReqData = async () => {
+  const getReqData = () => {
     const Url = `http://192.168.31.203:8000/getfood`;
     try {
-      const bd = {userId: showOther?null:userCredential._id}
-      await axios.get(Url)
+      const uId = userCredential._id;
+      const bd = { userId: uId, showOth: showOther }
+      console.log(userCredential._id);
+      axios.post(Url, bd)
         .then((res) => {
           if (res.status == 200) {
             setreqfoodData(res.data)
+            console.log(res.data)
           } else {
             seterrmsg(res.error);
           }
@@ -62,110 +39,78 @@ const Home = ({navigation}) => {
       console.log("Something Went Wrong ", error)
     }
   }
+
   useEffect(() => {
-    if(showOther){
-      getReqData();
-    }else{
-      getReqData();
-    }
-    
+    getReqData();
+  }, [showOther])
 
-  }, [reqfoodData])
-  AsyncStorage.getItem("UserLoginCredentials").then((result)=>{setuserCredential(result)}).catch((err) =>{console.log(err)})
-
+  AsyncStorage.getItem("UserLoginCredentials").then((result) => { setuserCredential(JSON.parse(result)) }).catch((err) => { console.log(err) })
 
   return (
-    <View style={styles.MainContainer}>
-      <Navbar key = {1}></Navbar>
-      <Animated.View style={{
-        paddingTop: 30,
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        top: 0,
-        bottom: 0,
-        flexGrow: 1,
-        backgroundColor: "white",
-        alignItems: "center",
-        borderRadius: showMenu ? 15 : 0,
-        transform: [
-          { scale: scaleValue },
-          { translateX: offsetValue }
-        ],
-      }}>
-        <View style={styles.Head}>
-          <TouchableOpacity onPress={MenuBtnFunc}><View style={styles.headNav}><FontAwesomeIcon color = "white"  size = {32} icon ={showMenu?faXmark: faBars}></FontAwesomeIcon></View></TouchableOpacity>
-          <Text style={styles.title}>NGO's Request</Text>
+    <View style={styles.container}>
+      <View style={[styles.butCont, styles.shadow,]}>
+        <TouchableOpacity style={{ width: "50%" }} onPress={() => { setShowOther(true) }}><Text style={[styles.btn, showOther ? { borderBottomColor: "white", color: "royalblue", fontWeight: "500", backgroundColor: "white", borderTopRightRadius: 12} : {}]}>Other NGO's</Text></TouchableOpacity>
+        <TouchableOpacity style={{ width: "50%" }} onPress={() => { setShowOther(false) }}><Text style={[styles.btn, showOther ? {} : { borderBottomColor: "white", color: "royalblue", fontWeight: "500", backgroundColor: "white", borderTopLeftRadius: 12 }]}>My Request</Text></TouchableOpacity>
+
+
+      </View>
+      <View style={styles.stsbutCont}>
+        <TouchableOpacity style={{ width: 105 }} onPressIn={() => { setStatus(0) }}><Text style={[styles.statusBtn, { borderColor: "#2eb82e", color: "#2eb82e" }, status == 0 ? { color: "white", backgroundColor: "#009933", borderRadius: 5 } : {}]}>
+          <FontAwesomeIcon size={13} icon={faCheckCircle} color={status == 0 ? "white" : "#2eb82e"}></FontAwesomeIcon>  APPROVE</Text></TouchableOpacity>
+
+        <TouchableOpacity style={{ width: 105 }} onPressIn={() => { setStatus(1) }}><Text style={[styles.statusBtn, { color: "tomato", borderColor: "tomato" }, status == 1 ? { color: "white", backgroundColor: "tomato", borderRadius: 5 } : {}]}>
+          <FontAwesomeIcon size={13} icon={faCheckCircle} color={status == 1 ? "white" : "tomato"}></FontAwesomeIcon>  PENDING</Text></TouchableOpacity>
+
+        <TouchableOpacity style={{ width: 105 }} onPressIn={() => { setStatus(2) }}><Text style={[styles.statusBtn, { color: "royalblue", borderColor: "royalblue" }, status == 2 ? { color: "white", backgroundColor: "royalblue", borderRadius: 5 } : {}]}>
+          <FontAwesomeIcon size={13} icon={faCheckCircle} color={status == 2 ? "white" : "royalblue"}></FontAwesomeIcon>  DELIVERED</Text></TouchableOpacity>
+
+      </View>
+
+      {
+        filter && <View style={styles.filtercontainer}>
+          <View style={[styles.filterBox, styles.shadow]}>
+            <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon={faRefresh}></FontAwesomeIcon> Recent</Text></TouchableOpacity>
+            <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon={faCalendar}></FontAwesomeIcon> Date</Text></TouchableOpacity>
+            <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon={faLocationPin}></FontAwesomeIcon> Location</Text></TouchableOpacity>
+
+          </View>
+
         </View>
-        <View style={[styles.butCont, styles.shadow]}>
-          <TouchableOpacity><Text style={styles.btn}>Other NGO's</Text></TouchableOpacity>
-          <TouchableOpacity><Text style={styles.btn}>My Request</Text></TouchableOpacity>
-        </View>
-        <TouchableOpacity><Text style={[styles.fltr]} onPress={() => { setfilter(!filter) }}><FontAwesomeIcon icon ={faFilter}></FontAwesomeIcon> Filter </Text></TouchableOpacity>
-
-        {
-          filter ? <View style={styles.filtercontainer}>
-            <View style={[styles.filterBox, styles.shadow]}>
-              <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon ={faRefresh}></FontAwesomeIcon> Recent</Text></TouchableOpacity>
-              <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon ={faCalendar}></FontAwesomeIcon> Date</Text></TouchableOpacity>
-              <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon ={faLocationPin}></FontAwesomeIcon> Location</Text></TouchableOpacity>
-
-            </View>
-
-          </View> : <></>
-        }
-        <ScrollView style={styles.requestCont}>
-          {reqfoodData.map((data) => {
-            return (
-              <View style={[styles.reqBox,styles.shadow]} key = {data._id} >
-                <View style={styles.box1}>
-                  <Text style={styles.reqId}>RequestId:</Text>
-                  <Text style={styles.reqDetail}><Text style={{ color: "royalblue" ,fontWeight:"700"}}>Name: </Text>Ngo name</Text>
-                  <Text style={styles.reqDetail}><Text style={{ color: "royalblue" ,fontWeight:"700" }}>FeedCount: </Text> {data.Feedcount}</Text>
-                  <Text style={styles.reqDetail}><Text style={{ color: "royalblue" ,fontWeight:"700" }}>City: </Text> {data.City}</Text>
-                </View>
-                <View style={styles.box2}>
-                  <TouchableOpacity><Text style={[styles.reqStateBtn,{color:data.Status == "Pending" ?"red":"green"}]}>{data.Status}</Text></TouchableOpacity>
-                  <Text style={styles.date}>{data.Date}  {data.Time}</Text>
-                </View>
+      }
+      <ScrollView style={styles.requestCont}>
+        {reqfoodData.map((data) => {
+          return (
+            <TouchableOpacity onPress={() => { showReqDetail(true); console.log("sdfsd") }} style={[styles.reqBox, styles.shadow]} key={data._id} >
+              <View style={styles.box1}>
+                <Text style={styles.reqId}>RequestId: {data._id}</Text>
+                <Text style={styles.reqDetail}><Text style={{ color: "royalblue", fontWeight: "700" }}>Name: </Text>{data.name}</Text>
+                <Text style={styles.reqDetail}><Text style={{ color: "royalblue", fontWeight: "700" }}>FeedCount: </Text> {data.Feedcount}</Text>
+                <Text style={styles.reqDetail}><Text style={{ color: "royalblue", fontWeight: "700" }}>City: </Text> {data.City}</Text>
               </View>
-            )
-          })}
-        </ScrollView>
-        <TouchableOpacity style = {styles.foodReqBtnCont} onPress={()=>{navigation.push("FoodReqRaise")}}><FontAwesomeIcon  style={styles.ReqBtn} size = {30} color = "white" icon = {faStickyNote}></FontAwesomeIcon></TouchableOpacity>
+              <View style={styles.box2}>
+                <TouchableOpacity><Text style={[styles.reqStateBtn, { color: data.Status == "Pending" ? "red" : "green" }]}>{data.Status}</Text></TouchableOpacity>
+                <Text style={styles.date}>{data.Date}  {data.Time}</Text>
+              </View>
+            </TouchableOpacity>
+          )
+        })}
+      </ScrollView>
+      <TouchableOpacity style={styles.foodReqBtnCont} onPress={() => { navigation.push("FoodReqRaise") }}><FontAwesomeIcon style={styles.ReqBtn} size={30} color="white" icon={faClipboardList}></FontAwesomeIcon></TouchableOpacity>
 
-      </Animated.View>
     </View>
   )
 
 }
 const styles = StyleSheet.create({
-  MainContainer: {
-    position: 'absolute',
-    flexGrow: 1,
-    paddingTop: 30,
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-  },
   container: {
-    paddingTop: 30,
-    // position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    flexGrow: 1,
+    width: "100%",
+    flex: 1,
     backgroundColor: "white",
     alignItems: "center",
 
   },
   Head: {
     zIndex: 1,
-    // position:"absolute",
-    // top:30,
-    // left:0,
     width: "100%",
     padding: 5,
     backgroundColor: "#2374D3",
@@ -176,7 +121,7 @@ const styles = StyleSheet.create({
   headNav: {
     color: "white",
     padding: 5,
-    borderWidth:2 ,
+    borderWidth: 2,
     backgroundColor: "#2374D3",
     borderColor: "white",
     borderWidth: 1,
@@ -192,9 +137,16 @@ const styles = StyleSheet.create({
   butCont: {
     width: "100%",
     flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "center",
+    backgroundColor: "#2374D3",
+
+  },
+  stsbutCont: {
+    width: "100%",
+    flexDirection: "row",
     backgroundColor: "white",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    justifyContent: "space-between"
 
   },
   shadow: {
@@ -209,15 +161,24 @@ const styles = StyleSheet.create({
 
   },
   btn: {
-    backgroundColor: "white",
-    paddingVertical: 7,
+    paddingVertical: 10,
     textAlign: "center",
     paddingHorizontal: 10,
     fontSize: 18,
-    color: "gray",
-    borderBottomColor: "lightblue",
+    color: "white",
+    borderBottomColor: "#2374D3",
     borderBottomWidth: 3,
     borderColor: "white",
+    backgroundColor: "#2374D3",
+  },
+  statusBtn: {
+    fontSize: 13,
+    padding: 7,
+    flexDirection: "row",
+    textAlignVertical: "center",
+    textAlign: "center",
+    borderWidth: 2,
+    borderRadius: 5
   },
   fltr: {
     borderWidth: 1,
@@ -256,7 +217,7 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingVertical: 20,
     flexDirection: "column",
-    marginTop:5,
+    marginTop: 5,
   },
   reqBox: {
     alignSelf: "center",
@@ -301,16 +262,16 @@ const styles = StyleSheet.create({
 
   },
   foodReqBtnCont: {
-    width: 60,
-    height: 60,
+    width: 55,
+    height: 55,
     position: "absolute",
     bottom: 20,
     right: 20,
 
-    justifyContent:"center",
-    alignItems:"center",
-    backgroundColor: "#ff9933",
-    borderRadius: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#9966ff",
+    borderRadius: 10,
     borderColor: "gray",
     borderWidth: 1,
     padding: 5,

@@ -3,24 +3,24 @@ import React, { useEffect } from 'react'
 import { useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowLeftLong, faArrowsLeftRightToLine, faBackward, faBiking, faCar, faCarAlt, faCarSide, faCheckSquare, faCircleCheck, faCircleDot, faDongSign, faMinus, faMinusCircle, faMotorcycle, faPeopleGroup, faPlus, faShieldDog, faTruck, faTruckDroplet, faVanShuttle, faWheatAlt } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeftLong, faArrowsLeftRightToLine, faBackward, faBackwardStep, faBiking, faCar, faCarAlt, faCarSide, faCheckSquare, faCircleCheck, faCircleDot, faDongSign, faDoorOpen, faMinus, faMinusCircle, faMobilePhone, faMotorcycle, faPeopleGroup, faPhone, faPhoneAlt, faPhoneFlip, faPlus, faShieldDog, faTruck, faTruckDroplet, faVanShuttle, faWheatAlt } from '@fortawesome/free-solid-svg-icons';
 import { faMinusSquare, faSquare, faSquareCheck } from '@fortawesome/free-regular-svg-icons';
 import { Dropdown } from 'react-native-element-dropdown';
 import * as Location from 'expo-location';
-import MapView, {Marker} from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const FoodReqRaise = ({ navigation }) => {
-  
-  const [foodDetail, setfoodDetail] = useState({});
+
+  const [foodDetail, setfoodDetail] = useState({contact:""});
   const [feedcount, setfeedcount] = useState(0);
   const [Address, setAddress] = useState("");
-  const [isFocus, setIsFocus] = useState({vehicle:false,city:false});
+  const [isFocus, setIsFocus] = useState({ vehicle: false, city: false });
   const [prefVehicle, setpreVehicle] = useState("");
-  const [city, setCity] = useState([]);
-  const [location,setLocation] = useState(null)
-  const [userCredential,setuserCredential] = useState({});
+  const [Cities, setCityDetails] = useState([]);
+  const [location, setLocation] = useState(null)
+  const [userCredential, setuserCredential] = useState({});
 
 
   const [errmsg, seterrormsg] = useState(null)
@@ -28,32 +28,35 @@ const FoodReqRaise = ({ navigation }) => {
   function resetFunc() {
     setEmpdetail({});
   }
-
-  const vehicleType = [
-    { label: "Two Wheeler", value: "Two Wheeler" },
-    { label: "Car", value: "Car" },
-    { label: "Van", value: "Van" },
-    { label: "Truck", value: "Truck" }
-
-  ]
-  const [vehicleOpt ,setVehicleOpt] = useState({type:["Two Wheeler","Car","Van","Truck"],icon:[faMotorcycle,faCarSide,faVanShuttle,faTruck],checked :0})
-  const [donatTypOpt ,setdonatTypOpt] = useState({type:["People","Animal" ,"Agriculture"],icon:[faPeopleGroup,faShieldDog,faWheatAlt],checked :0})
+  const [vehicleOpt, setVehicleOpt] = useState({ type: ["Two Wheeler", "Car", "Van", "Truck"], icon: [faMotorcycle, faCarSide, faVanShuttle, faTruck], checked: 0 })
+  const [donatTypOpt, setdonatTypOpt] = useState({ type: ["People", "Animal", "Agriculture"], icon: [faPeopleGroup, faShieldDog, faWheatAlt], checked: 0 })
 
 
 
   const url = `http://192.168.31.203:8000/food`;
   const HandlePress = async () => {
+    if (foodDetail.type == "" || JSON.parse(userCredential).name =="" || JSON.parse(userCredential)._id == ""
+     || JSON.parse(userCredential).role =="" || feedcount =="" ||prefVehicle =="" || foodDetail.city == ""
+      || foodDetail.contact == "" ||Address == "" ||location == null 
+      ) {
 
-    if (foodDetail.type == "" || feedcount == "" ||prefVehicle == "" ,city =="" ||Address == "" || location == null) {
+      console.log(foodDetail.type,JSON.parse(userCredential).name,JSON.parse(userCredential)._id , JSON.parse(userCredential).role ,feedcount,
+      prefVehicle,foodDetail.city, foodDetail.contact,Address,location
+      );
       alert("All Fields are Required !!!")
-    } else {
-      const body = {type : foodDetail.type , feedcount : feedcount ,vehicle :prefVehicle,city :city,address:Address,location:location}
+    } else if(foodDetail.contact.length  != 10 ){
+      console.log(foodDetail.contact.length)
+      alert("contact must be 10 digit !!!");
+      setfoodDetail({...foodDetail,contact:""})
+    }
+    else {
+      const dataBody = { Type: foodDetail.type,Name :JSON.parse(userCredential).name, UserId: JSON.parse(userCredential)._id, Role: JSON.parse(userCredential).role, Feedcount: feedcount, Vehicle: prefVehicle, City: foodDetail.city,Contact:foodDetail.contact, Address: Address, Location: location }
+
       try {
-        console.log(foodDetail)
-        await axios.post(url, body)
+        await axios.post(url, dataBody)
           .then((res) => {
             if (res.status == 200) {
-              alert("Req Raise Sucessfull !!!")
+              alert(res.data.msg)
               navigation.push("Home")
               // setEmpdetail({ EmpId: "", Name: "", Contact: "" });
 
@@ -85,16 +88,16 @@ const FoodReqRaise = ({ navigation }) => {
   //   }
   // })
 
-  const getLocationPermission = async ()=>{
-    let status =  await Location.requestForegroundPermissionsAsync();
+  const getLocationPermission = async () => {
+    let status = await Location.requestForegroundPermissionsAsync();
     // if(status !== 'granted'){
     //   // alert("Permission to access location was denied");
     //   return;
     // }
     let location = await Location.getCurrentPositionAsync({});
     setLocation(location);
-    console.log("Longitude",location.coords.longitude)
-    console.log("Latitude",location.coords.latitude)
+    console.log("Longitude", location.coords.longitude)
+    console.log("Latitude", location.coords.latitude)
   }
 
   // const geoCodeLocation = async ()=>{
@@ -108,147 +111,147 @@ const FoodReqRaise = ({ navigation }) => {
   //   console.log(geoCodeAdd);
 
   // }
-  useEffect(()=>{
+
+  const getCityName = async () => {
+    axios.get(`http://192.168.31.203:8000/City`)
+      .then((response) => {
+        setCityDetails(response.data)
+      })
+      .catch((e) => {
+        console.log(e)
+      })
+  }
+  
+  useEffect(() => {
+    let foodtype = vehicleOpt.type[vehicleOpt.checked]
+    let veh = donatTypOpt.type[donatTypOpt.checked]
+    setfoodDetail({...foodDetail,type:foodtype})
+    setpreVehicle(veh)
+
+    getCityName();
     getLocationPermission();
+
     // geoCodeLocation();
     // ReversegeoCodeToLocation();
+    
   },[])
-  AsyncStorage.getItem("UserLoginCredentials").then((result)=>{setuserCredential(result)}).catch((err) =>{console.log(err)})
-  console.log(userCredential)
+  AsyncStorage.getItem("UserLoginCredentials").then((result) => { setuserCredential(result) }).catch((err) => { console.log(err) })
   return (
-  //   <View style = {{flex:1}}>
-  //       <MapView
-  //       style = {StyleSheet.absoluteFill}
-  //       initialRegion={{
-  //         longitude:location != null?location.coords.longitude:72.842230,
-  //         latitude:location != null ? location.coords.latitude:19.075380,
-  //         latitudeDelta: 0.0922,
-  //         longitudeDelta: 0.0421,
-  //       }}
-  //       >
-  //         <Marker
-  //       coordinate={mapLocCords.pickupLocationCord}
-  //       // image={{uri: 'custom_pin'}}
-  //     />
-  //     <MapViewDirections
-  //   origin={mapLocCords.pickupLocationCord}
-  //   destination={mapLocCords.droplocationCord}
-  //   // apikey={GOOGLE_MAPS_APIKEY}
-  //   strokeWidth={3}
-  //   strokeColor="hotpink"
-  // />
-  //     </MapView>
-  //     </View>
+    //   <View style = {{flex:1}}>
+    //       <MapView
+    //       style = {StyleSheet.absoluteFill}
+    //       initialRegion={{
+    //         longitude:location != null?location.coords.longitude:72.842230,
+    //         latitude:location != null ? location.coords.latitude:19.075380,
+    //         latitudeDelta: 0.0922,
+    //         longitudeDelta: 0.0421,
+    //       }}
+    //       >
+    //         <Marker
+    //       coordinate={mapLocCords.pickupLocationCord}
+    //       // image={{uri: 'custom_pin'}}
+    //     />
+    //     <MapViewDirections
+    //   origin={mapLocCords.pickupLocationCord}
+    //   destination={mapLocCords.droplocationCord}
+    //   // apikey={GOOGLE_MAPS_APIKEY}
+    //   strokeWidth={3}
+    //   strokeColor="hotpink"
+    // />
+    //     </MapView>
+    //     </View>
 
-      
+
     <View style={styles.container}>
       <ScrollView style={styles.Scrollcontainer}>
         <View style={styles.subContainer}>
           <Text style={styles.subConTitle}>Donation Type</Text>
-          <View style={[styles.subConBox, { flexDirection:"row" ,flexWrap:"wrap",alignItems: "center", justifyContent: "space-between"}]}>
-          {
-            donatTypOpt.type.map(( val ,inx)=>{
-              return (
-                <TouchableOpacity onPress={()=>{setdonatTypOpt({...donatTypOpt,checked:inx});setfoodDetail({...foodDetail,type:val})} } key = {inx} style = {{flexDirection:"row",margin:10,alignItems:"center",width:"40%"}}>
-                  <FontAwesomeIcon color = {donatTypOpt.checked == inx ? "#9900ff":"#8585e0"}size={18} icon = {donatTypOpt.icon[inx]}></FontAwesomeIcon>
-                  <Text style = {{marginLeft:5, color:donatTypOpt.checked == inx ? "#9900ff":"#8585e0" ,fontSize:20,fontWeight:"400"}}>{val}</Text>
-                </TouchableOpacity>
-              )
+          <View style={[styles.subConBox, { flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }]}>
+            {
+              donatTypOpt.type.map((val, inx) => {
+                return (
+                  <TouchableOpacity onPress={() => { setdonatTypOpt({ ...donatTypOpt, checked: inx }); setfoodDetail({ ...foodDetail, type: val }) }} key={inx} style={{ flexDirection: "row", margin: 10, alignItems: "center", width: "40%" }}>
+                    <FontAwesomeIcon color={donatTypOpt.checked == inx ? "#9900ff" : "#8585e0"} size={18} icon={donatTypOpt.icon[inx]}></FontAwesomeIcon>
+                    <Text style={{ marginLeft: 5, color: donatTypOpt.checked == inx ? "#9900ff" : "#8585e0", fontSize: 20, fontWeight: "400" }}>{val}</Text>
+                  </TouchableOpacity>
+                )
 
-            })
-          }
+              })
+            }
           </View>
         </View>
 
         <View style={styles.subContainer}>
           <Text style={styles.subConTitle}>FeedCount</Text>
-          <View style={[styles.subConBox, { paddingVertical:10,flexDirection: 'row', alignItems: "center", justifyContent: "center" }]}>
-            {/* <TouchableOpacity onPress={() => { setfeedcount(feedcount - 1) }}><Text style={{ backgroundColor: "royalblue", padding: 7 }}><FontAwesomeIcon color="white" icon={faMinus}></FontAwesomeIcon></Text></TouchableOpacity> */}
-            <TextInput inputMode="numeric" style={{width:"95%", textAlign: "center", marginHorizontal: 5, backgroundColor: "#ffe6ff", fontSize: 15, paddingHorizontal: 5, borderRadius: 3, color: "#9900ff", fontSize: 24, paddingVertical: 8 }} keyboardType='phone-pad' value={feedcount} onChange={(cnt) => { if (feedcount <= 0) { setfeedcount(0) } else { setfeedcount(cnt); } }}></TextInput>
-            {/* <TouchableOpacity onPress={() => { setfeedcount(feedcount + 1) }}><Text style={{ backgroundColor: "royalblue", padding: 7 }}><FontAwesomeIcon color="white" icon={faPlus}></FontAwesomeIcon></Text></TouchableOpacity> */}
+          <View style={[styles.subConBox, { paddingVertical: 10, flexDirection: 'row', alignItems: "center", justifyContent: "center" }]}>
+            <TextInput inputMode="numeric" placeholder='0' style={{ width: "95%", textAlign: "center", marginHorizontal: 5, backgroundColor: "#ffe6ff", fontSize: 15, paddingHorizontal: 5, borderRadius: 3, color: "#9900ff", fontSize: 24, paddingVertical: 8 }} keyboardType='phone-pad' value={feedcount} onChangeText={(cnt) => { setfeedcount(cnt) }} ></TextInput>
           </View>
         </View>
         <View style={styles.subContainer}>
           <Text style={styles.subConTitle}>Suggested Vehicle Type</Text>
-          <View style={[styles.subConBox, { flexDirection:"row" ,flexWrap:"wrap",alignItems: "center", justifyContent: "center"}]}>
-          {
-            vehicleOpt.type.map(( val ,inx)=>{
-              return (
-                <TouchableOpacity onPress={()=>{setVehicleOpt({...vehicleOpt,checked:inx});setpreVehicle(val)} } key = {inx} style = {{flexDirection:"row",margin:10,alignItems:"center",width:"40%"}}>
-                  <FontAwesomeIcon color = {vehicleOpt.checked == inx ? "#9900ff":"#08585e0"}size={18} icon = {vehicleOpt.icon[inx]}></FontAwesomeIcon>
-                  <Text style = {{marginLeft:5, color:vehicleOpt.checked == inx ? "#9900ff":"#8585e0" ,fontSize:20,fontWeight:"400"}}>{val}</Text>
-                </TouchableOpacity>
-              )
-            })
-          }
+          <View style={[styles.subConBox, { flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "center" }]}>
+            {
+              vehicleOpt.type.map((val, inx) => {
+                return (
+                  <TouchableOpacity onPress={() => { setVehicleOpt({ ...vehicleOpt, checked: inx }); setpreVehicle(val) }} key={inx} style={{ flexDirection: "row", margin: 10, alignItems: "center", width: "40%" }}>
+                    <FontAwesomeIcon color={vehicleOpt.checked == inx ? "#9900ff" : "#8585e0"} size={18} icon={vehicleOpt.icon[inx]}></FontAwesomeIcon>
+                    <Text style={{ marginLeft: 5, color: vehicleOpt.checked == inx ? "#9900ff" : "#8585e0", fontSize: 20, fontWeight: "400" }}>{val}</Text>
+                  </TouchableOpacity>
+                )
+              })
+            }
           </View>
         </View>
 
-        
-        
-        {/* <View style={styles.subContainer}>
-          <Text style={styles.subConTitle}>Suggested Vehicle Type </Text>
 
-          <Dropdown
-            style={[styles.dropdown, isFocus.vehicle && { borderColor: 'royalblue' }]}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            inputSearchStyle={styles.inputSearchStyle}
-            iconStyle={styles.iconStyle}
-            data={vehicleType}
-            maxHeight={300}
-            labelField="label"
-            valueField="value"
-            placeholder={!isFocus.vehicle ? 'Select Vehicle' : '...'}
-            value={prefVehicle}
-            onFocus={() => setIsFocus(true)}
-            onBlur={() => setIsFocus(false)}
-            onChange={item => {
-              setpreVehicle(item.value);
-              setIsFocus({...isFocus,vehicle:false});
-            }}
-          />
-
-        </View> */}
 
         <View style={styles.subContainer}>
           <Text style={styles.subConTitle}>City</Text>
           <Dropdown
             style={[styles.dropdown, isFocus.city && { borderColor: 'royalblue' }]}
-            placeholderStyle={[styles.placeholderStyle,{color:"royalblue",}]}
-            selectedTextStyle={[styles.selectedTextStyle,{color:"#9900ff",}]}
+            placeholderStyle={[styles.placeholderStyle, { color: "royalblue", }]}
+            selectedTextStyle={[styles.selectedTextStyle, { color: "#9900ff", }]}
             inputSearchStyle={styles.inputSearchStyle}
             iconStyle={styles.iconStyle}
-            data={vehicleType}
+            data={Cities}
             maxHeight={300}
-            labelField="label"
+            labelField="value"
             valueField="value"
             placeholder={!isFocus.city ? 'Select City' : '...'}
-            value={foodDetail.City}
+            value={foodDetail.city}
             onFocus={() => setIsFocus(true)}
             onBlur={() => setIsFocus(false)}
             onChange={item => {
-              setfoodDetail({...foodDetail,City:item.value});
-              setIsFocus({...isFocus,city:false});
+              setfoodDetail({ ...foodDetail, city: item.value });
+              setIsFocus({ ...isFocus, city: false });
             }}
-            
+
           />
+          <View style={[styles.subContainer,{marginTop:20}]}>
+            <Text style={styles.subConTitle}>Mobile</Text>
+            <View style={[styles.subConBox, { paddingVertical: 10, alignItems: "center", justifyContent: "center" }]}>
+              <View style = {{width:"100%",paddingHorizontal:5,flexDirection: 'row',backgroundColor: "#ffe6ff",borderRadius:3}}>
+              <Text style = {{textAlignVertical:"center",marginLeft:6,marginRight:8}}><FontAwesomeIcon size={14}  color="#8585e0" icon = {faPhone}></FontAwesomeIcon></Text>
+              <TextInput inputMode="numeric" style={{ width: "80%", marginRight: 5, backgroundColor: "#ffe6ff",  pasddingHorizontal: 10, borderRadius: 3, color: "#9900ff", fontSize: 20, paddingVertical: 5 }} keyboardType='phone-pad' value={foodDetail.contact} onChangeText={(cnt) => { setfoodDetail({ ...foodDetail, contact: cnt }) }} ></TextInput>
+              </View>
+            </View>
+          </View>
 
         </View>
+
         <View style={styles.subContainer}>
           <Text style={styles.subConTitle}>Address</Text>
           <View style={[styles.subConBox, { flexDirection: 'row', alignItems: "center", justifyContent: "center" }]}>
-          <TextInput multiline numberOfLines={3} style={{backgroundColor:"#ffe6ff",width:"100%",borderRadius:3,textAlignVertical:"top",padding:6,fontSize:18,color:"royalblue"}} value = {Address} onChange = {(add)=>{setAddress(add)}}></TextInput>
+            <TextInput multiline numberOfLines={3} style={{ backgroundColor: "#ffe6ff", width: "100%", borderRadius: 3, textAlignVertical: "top", padding: 6, fontSize: 18, color: "royalblue" }} value={Address} onChangeText={(add) => { setAddress(add); }}></TextInput>
           </View>
         </View>
 
         <View style={styles.btnContainer}>
           <TouchableOpacity onPress={HandlePress}><Text style={styles.savbtn} >Save Detail</Text></TouchableOpacity>
-          {/* <TouchableOpacity onPress={resetFunc}><Text style = {styles.savbtn}>Reset</Text></TouchableOpacity> */}
+          <TouchableOpacity onPress={() => { navigation.push("Home") }}><Text style = {styles.savbtn}>Back</Text></TouchableOpacity>
         </View>
 
       </ScrollView>
-      <TouchableOpacity style={styles.backCont} onPress={() => { navigation.push("Home") }}><FontAwesomeIcon style={styles.backEmp} size={20} color="white" icon={faArrowLeftLong}></FontAwesomeIcon></TouchableOpacity>
 
     </View>
   )
@@ -263,7 +266,7 @@ const styles = StyleSheet.create({
     paddingTop: 30,
   },
   Scrollcontainer: {
-    marginVertical:20,
+    marginVertical: 20,
     width: "100%",
     flexGrow: 1,
     backgroundColor: "#e0bfff",
@@ -271,7 +274,7 @@ const styles = StyleSheet.create({
   },
   subContainer: {
 
-    margin: 6,
+    margin:6,
     padding: 11
 
   }, subConTitle: {

@@ -8,32 +8,10 @@ import axios from 'axios';
 import Navbar from './Navbar';
 
 
-const Employee = ({navigation}) => {
+const Employee = () => {
   const [empDetail ,setEmpdetail] = useState([]);
   const [errmsg,seterrmsg] = useState([]);
-  const [showMenu, setShowMenu] = useState(false);
 
-  const offsetValue = useRef(new Animated.Value(0)).current;
-  const scaleValue = useRef(new Animated.Value(1)).current;
-  const closeBtnOffset = useRef(new Animated.Value(0)).current;
-
-
-  const MenuBtnFunc= (navigation) => {
-
-    Animated.timing(scaleValue, {
-      toValue: showMenu ? 1:0.88,
-      duration: 300,
-      useNativeDriver:true,
-    })
-    .start()
-    Animated.timing(offsetValue, {
-      toValue: showMenu ? 0:290,
-      duration: 300,
-      useNativeDriver:true,
-    })
-      .start()
-      setShowMenu(!showMenu)
-  }
   const getEmployeeDetail = async ()=>{
     const url = `http://192.168.31.203:8000/Employees`;
     try{
@@ -57,29 +35,7 @@ const Employee = ({navigation}) => {
     navigation.push("AddEmp")
   }
   return (
-    <View style={styles.MainContainer}>
-      <Navbar key = {3}></Navbar>
-
-    <Animated.View style={{
-      paddingTop: 30,
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      top: 0,
-      bottom: 0,
-      flexGrow: 1,
-      backgroundColor: "white",
-      alignItems: "center",
-      borderRadius: showMenu ? 15:0,
-      transform:[
-        {scale:scaleValue},
-        {translateX:offsetValue}
-      ],
-    }}>
-      <View style={styles.Head}>
-      <TouchableOpacity onPress={MenuBtnFunc}><View style={styles.headNav}><FontAwesomeIcon color = "white"  size = {32} icon ={showMenu?faXmark: faBars}></FontAwesomeIcon></View></TouchableOpacity>
-          <Text style={styles.title}>Employee's Detail</Text>
-        </View>
+    <View style={styles.container}>
       <ScrollView style = {styles.detailContainer}>
         {
           empDetail.map((emp)=>{
@@ -92,25 +48,16 @@ const Employee = ({navigation}) => {
         }
       </ScrollView>
       <TouchableOpacity style = {styles.addEmpCont} onPress={HandlePress}><Image source = {newEmp} style = {styles.addEmp}></Image></TouchableOpacity>
-    </Animated.View>
     </View>
   )
 }
 const styles = StyleSheet.create({
-  MainContainer: {
-    position: 'absolute',
-    flexGrow: 1,
-    paddingTop: 30,
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
+  container: {
+    width:"100%",
+    flex: 1,
+    backgroundColor: "white",
+    alignItems: "center",
 
-  },
-  container:{
-    flexGrow:1,
-    position:"relative",
-    backgroundColor:"blue",
   },
   Head: {
     zIndex: 1,
