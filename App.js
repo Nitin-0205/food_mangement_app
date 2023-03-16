@@ -6,13 +6,14 @@ import Home from './components/Home';
 import Employee from "./components/Employee"
 import AddEmp from './components/AddEmp';
 import AppIntegrated from './components/AppIntegrated'
+import FoodReqRaise from './components/FoodReqRaise'
+import AssignEmp from './components/AssignEmp'
+import CheckInfo from './components/CheckInfo'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createContext, useContext, useState,useEffect } from 'react';
 import 'react-native-gesture-handler';
-import Draw from './components/Draw';
 import Signup from './components/Signup';
-// import AppLoading from 'expo-app-loading';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import  {CredentialContext} from './components/CredentialContext'
@@ -52,9 +53,13 @@ useEffect(()=>{
           {storedCredential !== null ? ( 
             <>
             <Stack.Screen name="AppIntegrated" component={AppIntegrated} options={{headerShown:false}}></Stack.Screen>
+            <Stack.Screen name="FoodReqRaise" component={FoodReqRaise} options={{headerShown:false}}></Stack.Screen>
+            <Stack.Screen name="CheckInfo" component={CheckInfo} options={{headerShown:false}}></Stack.Screen>
+            <Stack.Screen name="AssignEmp" component={AssignEmp} options={{headerShown:false}}></Stack.Screen>
+            <Stack.Screen name="AddEmp" component={AddEmp}options={{headerShown:false}}></Stack.Screen>
+
             {/* <Stack.Screen name="Home" component={Home} options={{headerShown:false}}></Stack.Screen> 
             <Stack.Screen name="Employees" component={Employee} options={{headerShown:false}}></Stack.Screen>
-            <Stack.Screen name="AddEmp" component={AddEmp}options={{headerShown:false}}></Stack.Screen>
             <Stack.Screen name="Head" component = {Head} options={{headerShown:false}}></Stack.Screen> */}
             </>
           ):<>

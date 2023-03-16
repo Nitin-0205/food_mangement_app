@@ -1,16 +1,17 @@
-import { View, Text, TouchableOpacity, StyleSheet, TouchableWithoutFeedback, ScrollView, Animated, Button } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Animated, Button ,ActivityIndicator} from 'react-native'
 import React, { useEffect, useRef } from 'react';
 import Head from "./Head"
 import { useState } from 'react';
-import Navbar from './Navbar';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBars, faBowlFood, faCheckSquare, faClipboardList, faCodePullRequest, faFilter, faFilterCircleDollar, faFilterCircleXmark, faIdBadge, faLocationPin, faNoteSticky, faRefresh, faSquareCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faBowlFood, faCheckSquare, faClipboardList, faCodePullRequest, faFaceGrin, faFaceSadTear, faFilter, faFilterCircleDollar, faFilterCircleXmark, faIdBadge, faLocationPin, faNoteSticky, faRefresh, faSadTear, faSquareCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar, faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
 
 
-const Home = ({ navigation }) => {
+
+const Home = () => {
   const [filter, setfilter] = useState(false);
   const [errmsg, seterrmsg] = useState();
   const [showOther, setShowOther] = useState(false);
@@ -18,8 +19,17 @@ const Home = ({ navigation }) => {
   const [status, setStatus] = useState(0);
   const [ReqDetail, showReqDetail] = useState(false)
   const [userCredential, setuserCredential] = useState({});
+  const [userFoodDetail ,setuserFoodeDetail] = useState({showReqDetail :ReqDetail});
+  const  navigation = useNavigation()
 
+  const [loading, setLoading] = useState(false);
 
+  const startLoading = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 300);
+  };
   const getReqData = () => {
     const Url = `http://192.168.31.203:8000/getfood`;
     try {
@@ -30,7 +40,7 @@ const Home = ({ navigation }) => {
         .then((res) => {
           if (res.status == 200) {
             setreqfoodData(res.data)
-            console.log(res.data)
+            // console.log(res.data)
           } else {
             seterrmsg(res.error);
           }
@@ -42,6 +52,7 @@ const Home = ({ navigation }) => {
 
   useEffect(() => {
     getReqData();
+    startLoading();
   }, [showOther])
 
   AsyncStorage.getItem("UserLoginCredentials").then((result) => { setuserCredential(JSON.parse(result)) }).catch((err) => { console.log(err) })
@@ -77,13 +88,25 @@ const Home = ({ navigation }) => {
 
         </View>
       }
+      {loading ? (
+              <View style={{flexGrow:1,fontSize:30,justifyContent:"center",alignItems:"center"}}>
+
+          <ActivityIndicator
+            visible={loading}
+            size = {50}
+            textContent={'Loading...'}
+            textStyle={styles.spinnerTextStyle}
+          />
+          </View>
+        ) :
+      (reqfoodData.length >0 ? (
       <ScrollView style={styles.requestCont}>
-        {reqfoodData.map((data) => {
-          return (
-            <TouchableOpacity onPress={() => { showReqDetail(true); console.log("sdfsd") }} style={[styles.reqBox, styles.shadow]} key={data._id} >
+        {
+          reqfoodData.map((data) => {
+          return (<TouchableOpacity onPress={() => { navigation.navigate("CheckInfo",{params:data})}} style={[styles.reqBox, styles.shadow]} key={data._id} >
               <View style={styles.box1}>
                 <Text style={styles.reqId}>RequestId: {data._id}</Text>
-                <Text style={styles.reqDetail}><Text style={{ color: "royalblue", fontWeight: "700" }}>Name: </Text>{data.name}</Text>
+                <Text style={styles.reqDetail}><Text style={{ color: "royalblue", fontWeight: "700" }}>Name: </Text>{data.Name}</Text>
                 <Text style={styles.reqDetail}><Text style={{ color: "royalblue", fontWeight: "700" }}>FeedCount: </Text> {data.Feedcount}</Text>
                 <Text style={styles.reqDetail}><Text style={{ color: "royalblue", fontWeight: "700" }}>City: </Text> {data.City}</Text>
               </View>
@@ -93,15 +116,26 @@ const Home = ({ navigation }) => {
               </View>
             </TouchableOpacity>
           )
-        })}
-      </ScrollView>
-      <TouchableOpacity style={styles.foodReqBtnCont} onPress={() => { navigation.push("FoodReqRaise") }}><FontAwesomeIcon style={styles.ReqBtn} size={30} color="white" icon={faClipboardList}></FontAwesomeIcon></TouchableOpacity>
+        })
+        }
+      </ScrollView>):
+      <View style={{flexGrow:1,fontSize:30,justifyContent:"center",alignItems:"center"}}>
+          <FontAwesomeIcon color = "#ffcc00" size = {50} icon = {faFaceGrin}></FontAwesomeIcon>
+        <Text style={{fontSize:30,color:"slateblue" ,flexDirection:"row"}}> No request Yet !!!</Text>
+        </View>)
+        }
+      <TouchableOpacity style={styles.foodReqBtnCont} onPress={() => {navigation.navigate("FoodReqRaise") }}><FontAwesomeIcon style={styles.ReqBtn} size={30} color="white" icon={faClipboardList}></FontAwesomeIcon></TouchableOpacity>
 
     </View>
   )
 
 }
 const styles = StyleSheet.create({
+  spinnerTextStyle: {
+    flex:1,
+    justifyContent:"center",
+    color: 'royalblue',
+  },
   container: {
     width: "100%",
     flex: 1,

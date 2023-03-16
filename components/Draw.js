@@ -13,8 +13,6 @@ function Draw() {
         <Drawer.Screen name="Login" component={Home}>Logout</Drawer.Screen>
         <Drawer.Screen name="Head" component={Home}></Drawer.Screen>
       </Drawer.Navigator>
-
-  
   )
 }
 

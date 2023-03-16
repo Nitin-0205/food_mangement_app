@@ -248,7 +248,7 @@ const FoodReqRaise = ({ navigation }) => {
 
         <View style={styles.btnContainer}>
           <TouchableOpacity onPress={HandlePress}><Text style={styles.savbtn} >Save Detail</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => { navigation.push("Home") }}><Text style = {styles.savbtn}>Back</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => { navigation.navigate("AppIntegrated") }}><Text style = {styles.savbtn}>Back</Text></TouchableOpacity>
         </View>
 
       </ScrollView>

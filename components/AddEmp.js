@@ -6,11 +6,13 @@ import axios from 'axios';
 import newEmp from "../assets/newEmp.png";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeftLong, faArrowsLeftRightToLine, faBackward } from '@fortawesome/free-solid-svg-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const AddEmp = ({ navigation }) => {
-  const [empDetail, setEmpdetail] = useState({ EmpId: "", Name: "", Contact: null, Address: "" });
+  const [empDetail, setEmpdetail] = useState({OrgId:"", EmpId: "", Name: "", Contact: null, Address: "" });
   const [errmsg, seterrormsg] = useState(null)
+  const [userCredential, setuserCredential] = useState({});
 
   function resetFunc() {
     setEmpdetail({ EmpId: "", Name: "", Contact: null, Address: "" });
@@ -18,7 +20,8 @@ const AddEmp = ({ navigation }) => {
 
   const url = `http://192.168.31.203:8000/addEmployee`;
   const HandlePress = async () => {
-    if (empDetail.EmpId == "" || empDetail.Name == "" || empDetail.Contact == "" || empDetail.Address == "") {
+    console.log(userCredential._id );
+    if (userCredential._id == "" || empDetail.EmpId == "" || empDetail.Name == "" || empDetail.Contact == "" || empDetail.Address == "") {
       alert("All Fields are Required !!!")
     } else if (empDetail.Contact.length != 10) {
       alert("Contact must be 10 digits !!!")
@@ -26,8 +29,8 @@ const AddEmp = ({ navigation }) => {
     } else {
 
       try {
-        console.log(empDetail.Contact)
         await axios.post(url, {
+          OrgId: userCredential._id,
           EmpId: empDetail.EmpId,
           Name: empDetail.Name,
           Contact: empDetail.Contact
@@ -35,12 +38,14 @@ const AddEmp = ({ navigation }) => {
           .then((res) => {
             if (res.status == 200) {
               alert("Employee Add Sucessfull !!!")
-              navigation.push("Employees")
-              // setEmpdetail({ EmpId: "", Name: "", Contact: "" });
+              navigation.navigate("AppIntegrated")
+              setEmpdetail({ EmpId: "", Name: "", Contact: "" ,Address:""});
 
             } else {
               seterrormsg(res.data.error);
-              alert(errmsg);
+              alert(res.data.error);
+              setEmpdetail({ EmpId: "", Name: "", Contact: "" ,Address:""});
+
 
             }
           })
@@ -50,6 +55,7 @@ const AddEmp = ({ navigation }) => {
     }
 
   }
+  AsyncStorage.getItem("UserLoginCredentials").then((result) => { setuserCredential(JSON.parse(result)) }).catch((err) => { console.log(err) })
 
   return (
     <View style={styles.container}>
@@ -66,7 +72,7 @@ const AddEmp = ({ navigation }) => {
             <TouchableOpacity onPress={HandlePress}><Text style = {styles.savbtn} >Save Detail</Text></TouchableOpacity>
             <TouchableOpacity onPress={resetFunc}><Text style = {styles.savbtn}>Reset</Text></TouchableOpacity>
         </View>
-      <TouchableOpacity style={styles.backCont} onPress={()=>{navigation.push("Employees")}}><FontAwesomeIcon  style={styles.backEmp} size = {30} color = "white" icon = {faArrowLeftLong}></FontAwesomeIcon></TouchableOpacity>
+      <TouchableOpacity style={styles.backCont} onPress={()=>{navigation.navigate("AppIntegrated")}}><FontAwesomeIcon  style={styles.backEmp} size = {30} color = "white" icon = {faArrowLeftLong}></FontAwesomeIcon></TouchableOpacity>
 
     </View>
   )
