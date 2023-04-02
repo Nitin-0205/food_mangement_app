@@ -10,10 +10,14 @@ import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
-const FoodReqRaise = ({ navigation }) => {
 
-  const [foodDetail, setfoodDetail] = useState({contact:""});
+const RestoReq = () => {
+  const navigation = useNavigation()
+
+  const [foodDetail, setfoodDetail] = useState({ contact: "" });
   const [feedcount, setfeedcount] = useState(0);
   const [Address, setAddress] = useState("");
   const [isFocus, setIsFocus] = useState({ vehicle: false, city: false });
@@ -31,33 +35,32 @@ const FoodReqRaise = ({ navigation }) => {
   const [vehicleOpt, setVehicleOpt] = useState({ type: ["Two Wheeler", "Car", "Van", "Truck"], icon: [faMotorcycle, faCarSide, faVanShuttle, faTruck], checked: 0 })
   const [donatTypOpt, setdonatTypOpt] = useState({ type: ["People", "Animal", "Agriculture"], icon: [faPeopleGroup, faShieldDog, faWheatAlt], checked: 0 })
 
+
   axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
-
-  const url = `/food`;
   const HandlePress = async () => {
-    if (foodDetail.type == "" || JSON.parse(userCredential).name =="" || JSON.parse(userCredential)._id == ""
-     || JSON.parse(userCredential).role =="" || feedcount =="" ||prefVehicle =="" || foodDetail.city == ""
-      || foodDetail.contact == "" ||Address == "" ||location == null 
-      ) {
+    if (foodDetail.type == "" || JSON.parse(userCredential).name == "" || JSON.parse(userCredential)._id == ""
+      || JSON.parse(userCredential).role == "" || feedcount == "" || prefVehicle == "" || foodDetail.city == ""
+      || foodDetail.contact == "" || Address == "" || location == null
+    ) {
 
-      console.log(foodDetail.type,JSON.parse(userCredential).name,JSON.parse(userCredential)._id , JSON.parse(userCredential).role ,feedcount,
-      prefVehicle,foodDetail.city, foodDetail.contact,Address,location
+      console.log(foodDetail.type, JSON.parse(userCredential).name, JSON.parse(userCredential)._id, JSON.parse(userCredential).role, feedcount,
+        prefVehicle, foodDetail.city, foodDetail.contact, Address, location
       );
       alert("All Fields are Required !!!")
-    } else if(foodDetail.contact.length  != 10 ){
+    } else if (foodDetail.contact.length != 10) {
       console.log(foodDetail.contact.length)
       alert("contact must be 10 digit !!!");
-      setfoodDetail({...foodDetail,contact:""})
+      setfoodDetail({ ...foodDetail, contact: "" })
     }
     else {
-      const dataBody = { Type: foodDetail.type,Name :JSON.parse(userCredential).name, UserId: JSON.parse(userCredential)._id, Role: JSON.parse(userCredential).role, Feedcount: feedcount, Vehicle: prefVehicle, City: foodDetail.city,Contact:foodDetail.contact, Address: Address, Location: location }
+      const dataBody = { Type: foodDetail.type, Name: JSON.parse(userCredential).name, UserId: JSON.parse(userCredential)._id, Role: JSON.parse(userCredential).role, Feedcount: feedcount, Vehicle: prefVehicle, City: foodDetail.city, Contact: foodDetail.contact, Address: Address, Location: location }
 
       try {
-        await axios.post(url, dataBody)
+        await axios.post(`/food`, dataBody)
           .then((res) => {
             if (res.status == 200) {
               alert(res.data.msg)
-              navigation.push("Home")
+              navigation.navigate("RestoHome")
               // setEmpdetail({ EmpId: "", Name: "", Contact: "" });
 
             } else {
@@ -113,7 +116,7 @@ const FoodReqRaise = ({ navigation }) => {
   // }
 
   const getCityName = async () => {
-    axios.get(`/City`)
+    axios.get(`http://192.168.31.203:8000/City`)
       .then((response) => {
         setCityDetails(response.data)
       })
@@ -121,11 +124,26 @@ const FoodReqRaise = ({ navigation }) => {
         console.log(e)
       })
   }
-  
+  const getData = async ()=>{
+    try{
+      await AsyncStorage.getItem("UserLoginCredentials")
+      .then(value =>{
+        if(value != null){
+          var datavalue = JSON.parse(value);
+          setuserCredential(datavalue);
+          console.log(value)
+        }
+      })
+    }catch(err){
+      console.log(err);
+    }
+  }
+
   useEffect(() => {
+    getData()
     let foodtype = vehicleOpt.type[vehicleOpt.checked]
     let veh = donatTypOpt.type[donatTypOpt.checked]
-    setfoodDetail({...foodDetail,type:foodtype})
+    setfoodDetail({ ...foodDetail, type: foodtype })
     setpreVehicle(veh)
 
     getCityName();
@@ -133,9 +151,8 @@ const FoodReqRaise = ({ navigation }) => {
 
     // geoCodeLocation();
     // ReversegeoCodeToLocation();
-    
-  },[])
-  AsyncStorage.getItem("UserLoginCredentials").then((result) => { setuserCredential(result) }).catch((err) => { console.log(err) })
+
+  }, [])
   return (
     //   <View style = {{flex:1}}>
     //       <MapView
@@ -153,7 +170,7 @@ const FoodReqRaise = ({ navigation }) => {
     //     />
     //     <MapViewDirections
     //   origin={mapLocCords.pickupLocationCord}
-    //   destination={mapLocCords.droplocationCord}
+    //   destination={mapocCords.droplocationCord}
     //   // apikey={GOOGLE_MAPS_APIKEY}
     //   strokeWidth={3}
     //   strokeColor="hotpink"
@@ -163,6 +180,13 @@ const FoodReqRaise = ({ navigation }) => {
 
 
     <View style={styles.container}>
+        <LinearGradient 
+        colors={["red","tomato",'#cc0000']}
+        style={styles.Title}>
+          <Text style = {{color:"white",fontSize:30,fontWeight:"600"}}>DONATE</Text>
+
+        </LinearGradient>
+      
       <ScrollView style={styles.Scrollcontainer}>
         <View style={styles.subContainer}>
           <Text style={styles.subConTitle}>Donation Type</Text>
@@ -171,8 +195,8 @@ const FoodReqRaise = ({ navigation }) => {
               donatTypOpt.type.map((val, inx) => {
                 return (
                   <TouchableOpacity onPress={() => { setdonatTypOpt({ ...donatTypOpt, checked: inx }); setfoodDetail({ ...foodDetail, type: val }) }} key={inx} style={{ flexDirection: "row", margin: 10, alignItems: "center", width: "40%" }}>
-                    <FontAwesomeIcon color={donatTypOpt.checked == inx ? "#9900ff" : "#8585e0"} size={18} icon={donatTypOpt.icon[inx]}></FontAwesomeIcon>
-                    <Text style={{ marginLeft: 5, color: donatTypOpt.checked == inx ? "#9900ff" : "#8585e0", fontSize: 20, fontWeight: "400" }}>{val}</Text>
+                    <FontAwesomeIcon color={donatTypOpt.checked == inx ? "red" : "#ff8080"} size={18} icon={donatTypOpt.icon[inx]}></FontAwesomeIcon>
+                    <Text style={{ marginLeft: 5, color: donatTypOpt.checked == inx ? "red" : "#ff8080", fontSize: 20, fontWeight: donatTypOpt.checked == inx ?"500":"300" }}>{val}</Text>
                   </TouchableOpacity>
                 )
 
@@ -184,7 +208,7 @@ const FoodReqRaise = ({ navigation }) => {
         <View style={styles.subContainer}>
           <Text style={styles.subConTitle}>FeedCount</Text>
           <View style={[styles.subConBox, { paddingVertical: 10, flexDirection: 'row', alignItems: "center", justifyContent: "center" }]}>
-            <TextInput inputMode="numeric" placeholder='0' style={{ width: "95%", textAlign: "center", marginHorizontal: 5, backgroundColor: "#ffe6ff", fontSize: 15, paddingHorizontal: 5, borderRadius: 3, color: "#9900ff", fontSize: 24, paddingVertical: 8 }} keyboardType='phone-pad' value={feedcount} onChangeText={(cnt) => { setfeedcount(cnt) }} ></TextInput>
+            <TextInput inputMode="numeric" placeholder='0' style={{ width: "95%", textAlign: "center", marginHorizontal: 5, backgroundColor: "#ffcccc", fontSize: 15, paddingHorizontal: 5, borderRadius: 3, color: "#b30000", fontSize: 24, paddingVertical: 8 }} keyboardType='phone-pad' value={feedcount} onChangeText={(cnt) => { setfeedcount(cnt) }} ></TextInput>
           </View>
         </View>
         <View style={styles.subContainer}>
@@ -194,8 +218,9 @@ const FoodReqRaise = ({ navigation }) => {
               vehicleOpt.type.map((val, inx) => {
                 return (
                   <TouchableOpacity onPress={() => { setVehicleOpt({ ...vehicleOpt, checked: inx }); setpreVehicle(val) }} key={inx} style={{ flexDirection: "row", margin: 10, alignItems: "center", width: "40%" }}>
-                    <FontAwesomeIcon color={vehicleOpt.checked == inx ? "#9900ff" : "#8585e0"} size={18} icon={vehicleOpt.icon[inx]}></FontAwesomeIcon>
-                    <Text style={{ marginLeft: 5, color: vehicleOpt.checked == inx ? "#9900ff" : "#8585e0", fontSize: 20, fontWeight: "400" }}>{val}</Text>
+                    <FontAwesomeIcon color={vehicleOpt.checked  == inx ? "red" : "#ff8080"} size={18} icon={vehicleOpt.icon[inx]}></FontAwesomeIcon>
+                    <Text style={{ marginLeft: 5, color: vehicleOpt.checked  == inx ? "red" : "#ff8080", fontSize: 20, fontWeight: vehicleOpt.checked  == inx ?"500":"300" }}>{val}</Text>
+
                   </TouchableOpacity>
                 )
               })
@@ -209,15 +234,15 @@ const FoodReqRaise = ({ navigation }) => {
           <Text style={styles.subConTitle}>City</Text>
           <Dropdown
             style={[styles.dropdown, isFocus.city && { borderColor: 'royalblue' }]}
-            placeholderStyle={[styles.placeholderStyle, { color: "royalblue", }]}
-            selectedTextStyle={[styles.selectedTextStyle, { color: "#9900ff", }]}
+            placeholderStyle={[styles.placeholderStyle, { color: "#ff8080", }]}
+            selectedTextStyle={[styles.selectedTextStyle, { color: "red", }]}
             inputSearchStyle={styles.inputSearchStyle}
             iconStyle={styles.iconStyle}
             data={Cities}
             maxHeight={300}
             labelField="value"
             valueField="value"
-            search ={true}
+            search={true}
             placeholder={!isFocus.city ? 'Select City' : '...'}
             value={foodDetail.city}
             onFocus={() => setIsFocus(true)}
@@ -228,12 +253,12 @@ const FoodReqRaise = ({ navigation }) => {
             }}
 
           />
-          <View style={[styles.subContainer,{marginTop:20}]}>
+          <View style={[styles.subContainer, { marginTop: 20 }]}>
             <Text style={styles.subConTitle}>Mobile</Text>
             <View style={[styles.subConBox, { paddingVertical: 10, alignItems: "center", justifyContent: "center" }]}>
-              <View style = {{width:"100%",paddingHorizontal:5,flexDirection: 'row',backgroundColor: "#ffe6ff",borderRadius:3}}>
-              <Text style = {{textAlignVertical:"center",marginLeft:6,marginRight:8}}><FontAwesomeIcon size={14}  color="#8585e0" icon = {faPhone}></FontAwesomeIcon></Text>
-              <TextInput inputMode="numeric" style={{ width: "80%", marginRight: 5, backgroundColor: "#ffe6ff",  pasddingHorizontal: 10, borderRadius: 3, color: "#9900ff", fontSize: 20, paddingVertical: 5 }} keyboardType='phone-pad' value={foodDetail.contact} onChangeText={(cnt) => { setfoodDetail({ ...foodDetail, contact: cnt }) }} ></TextInput>
+              <View style={{ width: "100%", paddingHorizontal: 5, flexDirection: 'row', backgroundColor: "#ffcccc", borderRadius: 3 }}>
+                <Text style={{ textAlignVertical: "center", marginLeft: 6, marginRight: 8 }}><FontAwesomeIcon size={14} color="#8585e0" icon={faPhone}></FontAwesomeIcon></Text>
+                <TextInput inputMode="numeric" style={{ width: "80%", marginRight: 5, backgroundColor: "#ffcccc", pasddingHorizontal: 10, borderRadius: 3, color: "red", fontSize: 20, paddingVertical: 5 }} keyboardType='phone-pad' value={foodDetail.contact} onChangeText={(cnt) => { setfoodDetail({ ...foodDetail, contact: cnt }) }} ></TextInput>
               </View>
             </View>
           </View>
@@ -243,17 +268,33 @@ const FoodReqRaise = ({ navigation }) => {
         <View style={styles.subContainer}>
           <Text style={styles.subConTitle}>Address</Text>
           <View style={[styles.subConBox, { flexDirection: 'row', alignItems: "center", justifyContent: "center" }]}>
-            <TextInput multiline numberOfLines={3} style={{ backgroundColor: "#ffe6ff", width: "100%", borderRadius: 3, textAlignVertical: "top", padding: 6, fontSize: 18, color: "royalblue" }} value={Address} onChangeText={(add) => { setAddress(add); }}></TextInput>
+            <TextInput multiline numberOfLines={3} style={{ backgroundColor: "#ffcccc", width: "100%", borderRadius: 3, textAlignVertical: "top", padding: 6, fontSize: 18, color: "#b30000" }} value={Address} onChangeText={(add) => { setAddress(add); }}></TextInput>
           </View>
         </View>
 
         <View style={styles.btnContainer}>
-          <TouchableOpacity onPress={HandlePress}><Text style={styles.savbtn} >Save Detail</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => { navigation.navigate("AppIntegrated") }}><Text style = {styles.savbtn}>Back</Text></TouchableOpacity>
+          <TouchableOpacity onPress={HandlePress}>
+            <LinearGradient
+              colors={['#ff6666','#ff6666', 'red']}
+              style={styles.savbtn}>
+              <Text style={{ color: "white" }} >Save Detail</Text>
+
+            </LinearGradient>
+
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => { navigation.navigate("RestoHome") }}>
+            <LinearGradient
+              colors={['#ff6666','#ff6666', 'red']}
+              style={styles.savbtn}>
+              <Text style={{ color: "white" }} >Back</Text>
+
+            </LinearGradient>
+
+          </TouchableOpacity>
         </View>
 
       </ScrollView>
-
+      
     </View>
   )
 }
@@ -262,27 +303,36 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     flex: 1,
-    backgroundColor: "#e0b3ff",
+    backgroundColor: "white",
     alignItems: "center",
     paddingTop: 30,
+  },
+  Title:{
+    width:"100%",
+    paddingVertical:10,
+    justifyContent:"center",
+    alignItems:"center",
+    borderBottomRightRadius:30,
+    borderBottomLeftRadius:30,
+
   },
   Scrollcontainer: {
     marginVertical: 20,
     width: "100%",
     flexGrow: 1,
-    backgroundColor: "#e0bfff",
+    // backgroundColor: "#33cc33",
 
   },
   subContainer: {
 
-    margin:6,
+    margin: 6,
     padding: 11
 
   }, subConTitle: {
     position: "absolute",
     top: 2,
     left: 20,
-    backgroundColor: "#e0bfff",
+    backgroundColor: "white",
     zIndex: 5,
     paddingHorizontal: 3,
     color: "gray",
@@ -303,15 +353,16 @@ const styles = StyleSheet.create({
 
   },
   savbtn: {
-    backgroundColor: "#9900ff",
+    width: "100%",
     padding: 8,
     width: 110,
-    color: "white",
-    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: "center",
     fontSize: 16,
-    borderColor: "lightgray",
-    borderRadius: 5,
+    borderColor: "#ff6600",
+    backgroundColor:"#ff6600",
     borderWidth: 2,
+    borderRadius: 5,
     marginHorizontal: 15,
   },
   backCont: {
@@ -364,7 +415,7 @@ const styles = StyleSheet.create({
   },
   label: {
     position: 'absolute',
-    color: "gray",
+    color: "#f2f2f2",
     backgroundColor: 'white',
     left: 5,
     top: 8,
@@ -388,4 +439,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default FoodReqRaise;
+export default RestoReq;

@@ -7,7 +7,7 @@ import newEmp from "../assets/newEmp.png";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeftLong, faArrowsLeftRightToLine, faBackward } from '@fortawesome/free-solid-svg-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { LinearGradient } from 'expo-linear-gradient';
 
 const AddEmp = ({ navigation }) => {
   const [empDetail, setEmpdetail] = useState({OrgId:"", EmpId: "", Name: "", Contact: null, Address: "" });
@@ -18,7 +18,9 @@ const AddEmp = ({ navigation }) => {
     setEmpdetail({ EmpId: "", Name: "", Contact: null, Address: "" });
   }
 
-  const url = `http://192.168.31.203:8000/addEmployee`;
+  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+
+  const url = `/addEmployee`;
   const HandlePress = async () => {
     console.log(userCredential._id );
     if (userCredential._id == "" || empDetail.EmpId == "" || empDetail.Name == "" || empDetail.Contact == "" || empDetail.Address == "") {
@@ -69,10 +71,34 @@ const AddEmp = ({ navigation }) => {
 
       </View>
       <View style = {styles.btnContainer}>
-            <TouchableOpacity onPress={HandlePress}><Text style = {styles.savbtn} >Save Detail</Text></TouchableOpacity>
-            <TouchableOpacity onPress={resetFunc}><Text style = {styles.savbtn}>Reset</Text></TouchableOpacity>
+      <TouchableOpacity onPress={HandlePress}>
+            <LinearGradient
+              colors={["#4687C2", "#79a7d2"]}
+              style={styles.savbtn}>
+              <Text style={{ fontSize: 18, color: "white" }}>Save Detail</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={resetFunc}>
+            <LinearGradient
+              colors={["#4687C2", "#79a7d2"]}
+              style={styles.savbtn}>
+              <Text style={{ fontSize: 18, color: "white" }}>Reset</Text>
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
-      <TouchableOpacity style={styles.backCont} onPress={()=>{navigation.navigate("AppIntegrated")}}><FontAwesomeIcon  style={styles.backEmp} size = {30} color = "white" icon = {faArrowLeftLong}></FontAwesomeIcon></TouchableOpacity>
+        <TouchableOpacity onPress={()=>{navigation.navigate("AppIntegrated")}} style={styles.backCont}>
+            <LinearGradient
+              colors={["#4687C2", "#79a7d2"]}
+              style={{width:60,height:40,justifyContent:"center",
+              alignItems:"center",
+              borderRadius: 10,
+              backgroundColor:"#336899",
+              borderColor: "#336899",
+              borderWidth: 2,
+              padding: 5,}}>
+              <FontAwesomeIcon  style={styles.backEmp} size = {30} color = "white" icon = {faArrowLeftLong}></FontAwesomeIcon>
+            </LinearGradient>
+          </TouchableOpacity>
 
     </View>
   )
@@ -124,17 +150,16 @@ const styles = StyleSheet.create({
     justifyContent:'center'
 
 },
-savbtn:{
-    backgroundColor:"#4687C2",
-    padding:8,
-    width:110,
-    color:"white",
-    textAlign:'center',
-    fontSize:16,
-    borderColor:"lightgray",
-    borderRadius:5,
-    borderWidth:2,
-    marginHorizontal:15,
+savbtn: {
+  backgroundColor: "#4687C2",
+  padding: 5,
+  width: 100,
+  alignItems: 'center',
+  justifyContent: "center",
+  borderColor: "#336899",
+  borderRadius: 5,
+  borderWidth: 2,
+  marginHorizontal: 15,
 },
   backCont: {
     width: 60,
@@ -143,13 +168,7 @@ savbtn:{
     bottom: 20,
     right: 20,
 
-    justifyContent:"center",
-    alignItems:"center",
-    backgroundColor: "royalblue",
-    borderRadius: 20,
-    borderColor: "royalblue",
-    borderWidth: 1,
-    padding: 5,
+    
   },
   backEmp: {
     width: "100%",

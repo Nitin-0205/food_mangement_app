@@ -1,19 +1,17 @@
-
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Animated, Button ,ActivityIndicator} from 'react-native'
 import React, { useContext, useEffect, useRef } from 'react';
 import Head from "./Head"
 import { useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBars, faBowlFood, faCheckSquare, faClipboardList, faCodePullRequest, faFaceGrin, faFaceSadTear, faFilter, faFilterCircleDollar, faFilterCircleXmark, faIdBadge, faLocationPin, faNoteSticky, faRefresh, faSadTear, faSquareCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeftLong, faBars, faBowlFood, faCheckSquare, faClipboardList, faCodePullRequest, faFaceGrin, faFaceSadTear, faFilter, faFilterCircleDollar, faFilterCircleXmark, faIdBadge, faLocationPin, faNoteSticky, faRefresh, faSadTear, faSquareCheck, faStepBackward, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar, faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
-import  {CredentialContext} from './CredentialContext'
 
 
 
-export default function Home() {
+export default function RestoHistory() {
   const [filter, setfilter] = useState(false);
   const [errmsg, seterrmsg] = useState();
   const [showOther, setShowOther] = useState(false);
@@ -23,24 +21,25 @@ export default function Home() {
   const [userCredential,setuserCredential] = useState([]);
   const [userFoodDetail ,setuserFoodeDetail] = useState({showReqDetail :ReqDetail});
   const  navigation = useNavigation()
-  // const userCredential = useContext(CredentialContext);
-  // console.log(userCredential.storedCredential._id)
+
   const [loading, setLoading] = useState(false);
 
   const startLoading = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-    }, 500);
-  };  
+    }, 800);
+  };
+  console.log("Main Resto Function ")
+  
   axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
 
-  const getReqData = async (usrCredential) => {
+  const getReqData = async () => {
     const Url = `/getfood`;
     try {
-      const uId = usrCredential._id;
+      const uId = userCredential._id;
       const bd = { userId: uId, showOth: showOther }
-      console.log("cred",usrCredential);
+      console.log("cred",userCredential._id);
       return await axios.post(Url, bd)
         .then((res) => {
           if (res.status == 200) {
@@ -54,6 +53,7 @@ export default function Home() {
       console.log("Something Went Wrong ", error)
     }
   }
+
   const getData = async ()=>{
     try{
       await AsyncStorage.getItem("UserLoginCredentials")
@@ -61,21 +61,18 @@ export default function Home() {
         if(value != null){
           var datavalue = JSON.parse(value);
           setuserCredential(datavalue);
-          // console.log("Credential",value)
-          getReqData(datavalue)
+          console.log("Credential",value)
         }
       })
     }catch(err){
       console.log(err);
     }
   }
-  
   useEffect(() => {
     getData();
-    console.log(userCredential)
-    // getReqData()
+    getReqData();
     startLoading();
-  }, [showOther])
+  }, [])
 
 
   return (
@@ -145,7 +142,7 @@ export default function Home() {
         <Text style={{fontSize:30,color:"slateblue" ,flexDirection:"row"}}> No request Yet !!!</Text>
         </View>)
         }
-      <TouchableOpacity style={styles.foodReqBtnCont} onPress={() => {navigation.navigate("FoodReqRaise") }}><FontAwesomeIcon style={styles.ReqBtn} size={30} color="white" icon={faClipboardList}></FontAwesomeIcon></TouchableOpacity>
+      <TouchableOpacity style={styles.foodReqBtnCont} onPress={() => {navigation.navigate("RestoHome") }}><FontAwesomeIcon style={styles.ReqBtn} size={30} color="white" icon={faArrowLeftLong}></FontAwesomeIcon></TouchableOpacity>
 
     </View>
   );
@@ -338,3 +335,4 @@ const styles = StyleSheet.create({
 
 
 })
+

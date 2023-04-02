@@ -19,11 +19,14 @@ const AssignEmp = ({route}) => {
   const foodInfoDetail = route?.params?.params;
 
   console.log(foodInfoDetail);
-  const getEmployeeDetail = () => {
-    const url = `http://192.168.31.203:8000/Employees`;
+
+  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+
+  const getEmployeeDetail = (usrCredential) => {
+    const url = `/Employees`;
     try {
       console.log(uId)
-      const uId = userCredential._id;
+      const uId = usrCredential._id;
       axios.post(url, { OrgId: uId })
         .then((res) => {
           if (res.status == 200) {
@@ -36,13 +39,28 @@ const AssignEmp = ({route}) => {
       console.log("Something Went Wrong ", error)
     }
   }
-
+  const getData =()=>{
+    try{
+      AsyncStorage.getItem("UserLoginCredentials")
+      .then(value =>{
+        if(value != null){
+          var datavalue = JSON.parse(value);
+          setuserCredential(datavalue);
+          // console.log(value)
+          getEmployeeDetail(datavalue)
+        }
+      })
+    }catch(err){
+      console.log(err);
+    }
+  }
   useEffect(() => {
-    getEmployeeDetail();
+    getData()
+    // getEmployeeDetail();
   },[])
 
   const HandlePress = (empDetail) => {
-    const url = `http://192.168.31.203:8000/UpdEmployee`;
+    const url = `/UpdEmployee`;
     try {
       const uId = userCredential._id;
       console.log(uId)
@@ -51,6 +69,7 @@ const AssignEmp = ({route}) => {
         .then((res) => {
           if (res.status == 200) {
             setEmpdetail(res.data)
+            console,log(res.data);
           } else {
             seterrmsg(res.error);
           }
@@ -61,7 +80,6 @@ const AssignEmp = ({route}) => {
     navigation.push("AppIntegrated")
   }
 
-  AsyncStorage.getItem("UserLoginCredentials").then((result) => { setuserCredential(JSON.parse(result)) }).catch((err) => { console.log(err) })
 
   return (
     <View style={styles.container}>
@@ -69,7 +87,7 @@ const AssignEmp = ({route}) => {
         {
           empDetail.map((emp) => {
             return (
-            <TouchableOpacity onPress={()=>{HandlePress(emp)}} disabled = {emp.Status == "A"?false:true}   style={[styles.EmpBox, { backgroundColor: emp.Status == "A" ? "#47d147" : "tomato" ,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}]} key={emp.Contact}>
+            <TouchableOpacity onPress={()=>{HandlePress(emp)}} disabled = {emp.Status == "A"?false:true}   style={[styles.EmpBox, { backgroundColor: emp.Status == "A" ? "#00b359" : "tomato" ,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}]} key={emp.Contact}>
               <View>
               <Text><Text style={{ color: "lightgray" }}>Employee ID: {emp.EmpId}</Text></Text>
               <Text><Text style={{ color: "white", fontSize: 18, marginVertical: 10 }}>Name: {emp.Name}</Text></Text>

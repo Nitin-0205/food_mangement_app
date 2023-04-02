@@ -2,29 +2,31 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Animated }
 import React, { useState, useEffect, useRef } from 'react'
 import newEmp from "../assets/newEmp.png";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faFaceGrin, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import Navbar from './Navbar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Loading from './Loading';
 
-
-const Employee = () => {
+export default function Employee() {
 
   const [empDetail, setEmpdetail] = useState([]);
   const [errmsg, seterrmsg] = useState([]);
   const navigation = useNavigation()
-  const [userCredential, setuserCredential] = useState({});
+  const [userCredential, setuserCredential] = useState([]);
+  const [loading, setLoading] = useState(false);
 
+  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
 
-  const getEmployeeDetail = () => {
-    const url = `http://192.168.31.203:8000/Employees`;
+  const getEmployeeDetail = async (usrCredential) => {
+    const url = `/Employees`;
     try {
-      const oId = userCredential._id;
+      const oId = usrCredential._id;
 
-      // console.log(oId);
-      axios.post(url,
-        { OrgId: oId ,wil:"ftyfv"})
+      console.log("val", oId);
+      await axios.post(url,
+        { OrgId: oId })
         .then((res) => {
           if (res.status == 200) {
             setEmpdetail(res.data)
@@ -37,33 +39,62 @@ const Employee = () => {
     } catch (error) {
       console.log("Something Went Wrong ", error)
     }
-
   }
-  getEmployeeDetail();
-  AsyncStorage.getItem("UserLoginCredentials").then((result) => { setuserCredential(JSON.parse(result)) }).catch((err) => { console.log(err) })
+  const getData = () => {
+    try {
+      AsyncStorage.getItem("UserLoginCredentials")
+        .then(value => {
+          if (value != null) {
+            var datavalue = JSON.parse(value);
+            setuserCredential(datavalue);
+            // console.log(datavalue)
+            getEmployeeDetail(datavalue)
+          }
+        })
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
+  const startLoading = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  };  
   useEffect(() => {
-    getEmployeeDetail();
-  },[])
+    getData()
+    // getEmployeeDetail();
+    startLoading();
+
+  }, [])
+
   const HandlePress = () => {
     navigation.navigate("AddEmp")
   }
 
+
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.detailContainer}>
+      {loading ? (
+              <Loading loading = {loading}></Loading>
+        ):(empDetail.length > 0 ?<ScrollView style={styles.detailContainer}>
         {
           empDetail.map((emp) => {
             return <View style={styles.EmpBox} key={emp.Contact}>
               <Text><Text style={{ color: "gray" }}>Employee ID: {emp.EmpId}</Text></Text>
-              <Text><Text style={{ color: "blue", fontSize: 18, marginVertical: 10 }}>Name: {emp.Name}</Text></Text>
-              <Text><Text style={{ color: "red", fontSize: 15, marginVertical: 10 }}>Contact: {emp.Contact}</Text></Text>
+              <Text><Text style={{ color: "black", fontSize: 18, marginVertical: 10 }}>Name: {emp.Name}</Text></Text>
+              <Text><Text style={{ color: "black", fontSize: 18, marginVertical: 10 }}>Contact: {emp.Contact}</Text></Text>
             </View>
           })
         }
-      </ScrollView>
+      </ScrollView>:<View style={{flexGrow:1,fontSize:30,justifyContent:"center",alignItems:"center"}}>
+          <FontAwesomeIcon color = "#ffcc00" size = {50} icon = {faFaceGrin}></FontAwesomeIcon>
+        <Text style={{fontSize:30,color:"slateblue" ,flexDirection:"row"}}> No Employee Yet !!!</Text>
+        </View>)
+      }
       <TouchableOpacity style={styles.addEmpCont} onPress={HandlePress}><Image source={newEmp} style={styles.addEmp}></Image></TouchableOpacity>
-    </View>
+    </View >
   )
 }
 const styles = StyleSheet.create({
@@ -107,6 +138,7 @@ const styles = StyleSheet.create({
   },
   EmpBox: {
     width: "98%",
+    marginTop:5,
     alignSelf: "center",
     paddingHorizontal: 20,
     paddingVertical: 20,
@@ -133,4 +165,3 @@ const styles = StyleSheet.create({
   }
 })
 
-export default Employee;

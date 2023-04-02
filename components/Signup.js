@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 
 import { Dropdown } from 'react-native-element-dropdown';
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 
@@ -49,25 +50,26 @@ function Signup() {
   ];
 
 
-  const InsertCity = () => {
-    cit = []
-    var index = 1;
-    cit.map((cityName) => {
-      const detailBody = {
-        key: index,
-        value: cityName,
-      }
-      axios.post(`http://192.168.31.203:8000/AddCity`, detailBody)
-        .then((res) => {
-          console.log(res.data)
-        })
-      index = index + 1;
+  // const InsertCity = () => {
+  //   cit = []
+  //   var index = 1;
+  //   cit.map((cityName) => {
+  //     const detailBody = {
+  //       key: index,
+  //       value: cityName,
+  //     }
+  //     axios.post(`/AddCity`, detailBody)
+  //       .then((res) => {
+  //         console.log(res.data)
+  //       })
+  //     index = index + 1;
 
-    })
-  }
+  //   })
+  // }
+  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
 
   useEffect(() => {
-    axios.get(`http://192.168.31.203:8000/City`)
+    axios.get(`/City`)
       .then((response) => {
         setCityDetails(response.data)
       })
@@ -75,18 +77,18 @@ function Signup() {
         console.log(e)
       })
   }, [])
-  
+
   const handleSubmit = async () => {
-    const URL = `http://192.168.31.203:8000/signup`;
+    const URL = `/signup`;
     if (detail.email == "" || detail.name == "" || detail.contact == "" || detail.address == "") {
       alert("All fields are required !!!");
-    }else if(roleChoose == undefined ||
+    } else if (roleChoose == undefined ||
       cityChoose == undefined) {
-        if(roleChoose == undefined){
-          alert("Please Select Role !!!")
-        }else{
-          alert("Please Select City !!!")
-        }
+      if (roleChoose == undefined) {
+        alert("Please Select Role !!!")
+      } else {
+        alert("Please Select City !!!")
+      }
     } else {
       if (detail.password !== detail.conPassword) {
         alert("Password Must be Same !!!");
@@ -112,8 +114,8 @@ function Signup() {
               setCity(undefined);
               setDetail({ contact: "" });
               navigation.navigate("Login")
-            }else{
-              setDetail({...detail,email:""});
+            } else {
+              setDetail({ ...detail, email: "" });
             }
           })
           .catch((err) => {
@@ -238,11 +240,23 @@ function Signup() {
           </View>
         </View>
         <View style={styles.btnContainer}>
-          <TouchableOpacity onPress={handleSubmit}><Text style={styles.subBtn} >Submit</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => { setDetail({ contact: "" }) }}><Text style={styles.subBtn} >Reset</Text></TouchableOpacity>
+          <TouchableOpacity onPress={handleSubmit}>
+            <LinearGradient
+              colors={["#4687C2", "#79a7d2"]}
+              style={styles.subBtn}>
+              <Text style={{ fontSize: 18, color: "white" }}>Submit</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => { setDetail({ contact: "" }) }}>
+            <LinearGradient
+              colors={["#4687C2", "#79a7d2"]}
+              style={styles.subBtn}>
+              <Text style={{ fontSize: 18, color: "white" }}>Reset</Text>
+            </LinearGradient>
+          </TouchableOpacity>
 
         </View>
-        <TouchableOpacity onPress={()=>{navigation.navigate("Login")}} ><Text style={{ fontWeight:"600",color: "tomato",wordSpacing:2 }}>Back To Login !</Text></TouchableOpacity>
+        <TouchableOpacity onPress={() => { navigation.navigate("Login") }} ><Text style={{ fontWeight: "600", color: "tomato", wordSpacing: 2 }}>Back To Login !</Text></TouchableOpacity>
 
 
       </ScrollView>
@@ -310,23 +324,15 @@ const styles = StyleSheet.create({
   },
   subBtn: {
     backgroundColor: "#4687C2",
-    padding: 8,
-    width: 110,
-    color: "white",
-    textAlign: 'center',
-    fontSize: 15,
-    borderColor: "royalblue",
+    padding: 5,
+    width: 100,
+    alignItems: 'center',
+    justifyContent: "center",
+    borderColor: "#336899",
     borderRadius: 5,
     borderWidth: 2,
-    textTransform:"uppercase",
     marginHorizontal: 15,
-    letterSpacing:1,
-    fontWeight:"500"
   },
-
-
-
-
   dropcontainer: {
     backgroundColor: 'azure',
     paddingVertical: 16,

@@ -5,22 +5,30 @@ import { useState } from 'react';
 import { faMapMarkedAlt, faMapMarker, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 export default function CheckInfo({route}) {
     const navigation = useNavigation();
 
     const foodInfoDetail = route?.params?.params;
-    console.log(foodInfoDetail)
+    // console.log(foodInfoDetail)
     return (
         <View style = {styles.container}>
         
             <TouchableOpacity  onPress = {()=>{navigation.navigate("AppIntegrated")}}><FontAwesomeIcon style = {styles.closeTabBtn} color = "royalblue"  size = {32} icon ={faXmark}></FontAwesomeIcon></TouchableOpacity>
+            
             <View style={styles.Infocontainer}>
+            <LinearGradient
+            colors ={["#35af75","#35AF75"]}>
                 <View style={styles.Information}>
-                    <TouchableOpacity style={styles.infoStatus}>
+                    <TouchableOpacity  onPress = {()=>{navigation.navigate("Map",{params:foodInfoDetail?.Location})}}>
+                    <LinearGradient
+                        colors = {["#0a6fc2","#2597f4","#2196F3"]}
+                        style={styles.infoStatus}>
                         <Text style={styles.location}>LOCATION</Text>
                         <FontAwesomeIcon style = {styles.limg} color = "white"  size = {32} icon ={faMapMarkedAlt}></FontAwesomeIcon>
+                        </LinearGradient>
                     </TouchableOpacity>
 
                     <View style={styles.InfotxtContainer}>
@@ -32,12 +40,19 @@ export default function CheckInfo({route}) {
                         <Text style={styles.options}>Date      : {foodInfoDetail?.Date}</Text>
                         <Text style={styles.options}>Time      : {foodInfoDetail?.Time}</Text>
                         <Text style={styles.options}>Request ID: {foodInfoDetail?._id}</Text>
-                        <Text style={styles.options}>Mobile    : {foodInfoDetail?.Vehicle}</Text>
+                        <Text style={styles.options}>Mobile    : {foodInfoDetail?.Contact}</Text>
                     </View>
-                    <TouchableOpacity onPress={()=>{navigation.navigate("AssignEmp",{params:foodInfoDetail})}} style = {styles.Infobtn}><Text style={styles.InfoTxtbtn}>Accept Donation</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{navigation.navigate("AssignEmp",{params:foodInfoDetail})}} style = {styles.Infobtn}>
+                        <LinearGradient
+                        colors = {["#2196F3","#0a6fc2"]}
+                        style={styles.InfoTxtbtn}>
+                        <Text style={{fontSize: 20,fontWeight: 'bold',color: 'white'}}>Accept Donation</Text>
+
+                        </LinearGradient>
+                        </TouchableOpacity>
 
                 </View>
-
+                </LinearGradient>
             </View>
         </View>
     )
@@ -71,7 +86,7 @@ const styles = StyleSheet.create({
         height: 600,
         borderColor: 'lightgray',
         flexDirection: 'column',
-        backgroundColor: '#35AF75',
+        // backgroundColor: '#35AF75',
         justifyContent:"space-between",
         borderRadius: 4,
         padding:10,
@@ -116,23 +131,18 @@ const styles = StyleSheet.create({
     Infobtn: {
         marginTop: 30,
         width: 250,
-        height: 42,
-        backgroundColor: '#2196F3',
-        borderRadius: 5,
+        // height: 42,
         marginLeft: 30,
-        borderColor: 'white',
-        alignItems:"center",
-        justifyContent:"center",
-        borderWidth: 2,
         marginBottom:10
     },
     InfoTxtbtn: {
-        textAlign: 'center',
-        fontSize: 20,
-        marginBottom: 4,
-        fontWeight: 'bold',
-        color: 'white'
-        
+        alignItems:"center",
+        borderRadius: 3,
+        justifyContent:"center",
+        paddingVertical:6,
+        borderColor: '#9ed1fa',
+        backgroundColor: '#9ed1fa',
+        borderWidth: 2,
 
 
     },
