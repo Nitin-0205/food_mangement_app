@@ -20,7 +20,9 @@ const AssignEmp = ({route}) => {
 
   console.log(foodInfoDetail);
 
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+  // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+    axios.defaults.baseURL = `http://192.168.31.203:8000`;
+
 
   const getEmployeeDetail = (usrCredential) => {
     const url = `/Employees`;
@@ -56,7 +58,7 @@ const AssignEmp = ({route}) => {
   }
   useEffect(() => {
     getData()
-    // getEmployeeDetail();
+    getEmployeeDetail(userCredential);
   },[])
 
   const HandlePress = (empDetail) => {
@@ -71,7 +73,7 @@ const AssignEmp = ({route}) => {
             setEmpdetail(res.data)
             console,log(res.data);
           } else {
-            seterrmsg(res.error);
+            seterrmsg("HELLO",res.error);
           }
         })
     } catch (error) {

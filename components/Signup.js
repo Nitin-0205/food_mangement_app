@@ -6,6 +6,7 @@ import { faChevronDown, faCity, faEye, faEyeSlash } from '@fortawesome/free-soli
 import { faIdCard } from '@fortawesome/free-regular-svg-icons';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete"
 
 import { Dropdown } from 'react-native-element-dropdown';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -129,7 +130,8 @@ function Signup() {
   return (
     <View style={styles.container} >
       <Text style={styles.logTitle}>Sign Up</Text>
-      <ScrollView contentContainerStyle={styles.scroolCon}>
+    
+      <ScrollView contentContainerStyle={styles.scroolCon} keyboardShouldPersistTaps={'handled'}>
 
         <View>
           <Text style={styles.fieldLabel}>Email</Text>
@@ -141,6 +143,7 @@ function Signup() {
           <TextInput style={styles.fields} placeholder="" value={detail.name} onChangeText={(txt) => { setDetail({ ...detail, name: txt }) }}></TextInput>
 
         </View>
+
         <View style={styles.dropcontainer}>
           {renderLabel("Role")}
           <Dropdown
@@ -219,7 +222,10 @@ function Signup() {
           />
         </View>
 
-
+        <View style ={{width:"80%"}}>
+        
+        </View>
+    
         <View>
           <Text style={styles.fieldLabel}>Address</Text>
           <TextInput style={[styles.fields, { textAlignVertical: "top", maxHeight: 120 }]} multiline={true} numberOfLines={3} placeholder="" value={detail.address} onChangeText={(txt) => { setDetail({ ...detail, address: txt }) }}></TextInput>
@@ -229,14 +235,14 @@ function Signup() {
           <Text style={styles.fieldLabel}>Password</Text>
           <View style={{ marginBottom: 25, flexDirection: "row", height: 48, backgroundColor: "white", width: 250, borderColor: "lightgray", borderWidth: 2, borderRadius: 5 }}>
             <TextInput style={{ padding: 8, fontSize: 17, flexGrow: 1, backgroundColor: "white", borderRadius: 5 }} placeholder="" secureTextEntry={passVisible} value={detail.password} onChangeText={(txt) => { setDetail({ ...detail, password: txt }) }}></TextInput>
-            <TouchableOpacity onPress={() => { setpassVisible(!passVisible) }} style={{ width: 35, height: "100%", justifyContent: "center", alignItems: "center" }}><FontAwesomeIcon color="gray" size={16} icon={passVisible ? faEye : faEyeSlash}></FontAwesomeIcon></TouchableOpacity>
+            <TouchableOpacity onPress={() => { setpassVisible(!passVisible) }} style={{ width: 35, height: "100%", justifyContent: "center", alignItems: "center" }}><FontAwesomeIcon color="gray" size={16} icon={passVisible ? faEyeSlash:faEye}></FontAwesomeIcon></TouchableOpacity>
           </View>
         </View>
         <View>
           <Text style={styles.fieldLabel}>Confirm Password</Text>
           <View style={{ marginBottom: 25, flexDirection: "row", height: 48, backgroundColor: "white", width: 250, borderColor: "lightgray", borderWidth: 2, borderRadius: 5 }}>
             <TextInput style={{ padding: 8, fontSize: 17, flexGrow: 1, backgroundColor: "white", borderRadius: 5 }} placeholder="" secureTextEntry={conpassVisible} value={detail.conPassword} onChangeText={(txt) => { setDetail({ ...detail, conPassword: txt }) }}></TextInput>
-            <TouchableOpacity onPress={() => { setconpassVisible(!conpassVisible) }} style={{ width: 35, height: "100%", justifyContent: "center", alignItems: "center" }}><FontAwesomeIcon color="gray" size={16} icon={conpassVisible ? faEye : faEyeSlash}></FontAwesomeIcon></TouchableOpacity>
+            <TouchableOpacity onPress={() => { setconpassVisible(!conpassVisible) }} style={{ width: 35, height: "100%", justifyContent: "center", alignItems: "center" }}><FontAwesomeIcon color="gray" size={16} icon={conpassVisible ?  faEyeSlash:faEye}></FontAwesomeIcon></TouchableOpacity>
           </View>
         </View>
         <View style={styles.btnContainer}>

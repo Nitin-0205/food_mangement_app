@@ -10,6 +10,7 @@ import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete"
 
 const FoodReqRaise = ({ navigation }) => {
 
@@ -51,14 +52,13 @@ const FoodReqRaise = ({ navigation }) => {
     }
     else {
       const dataBody = { Type: foodDetail.type,Name :JSON.parse(userCredential).name, UserId: JSON.parse(userCredential)._id, Role: JSON.parse(userCredential).role, Feedcount: feedcount, Vehicle: prefVehicle, City: foodDetail.city,Contact:foodDetail.contact, Address: Address, Location: location }
-
       try {
         await axios.post(url, dataBody)
           .then((res) => {
             if (res.status == 200) {
               alert(res.data.msg)
-              navigation.push("Home")
-              // setEmpdetail({ EmpId: "", Name: "", Contact: "" });
+              navigation.navigate("Home")
+              setEmpdetail({ EmpId: "", Name: "", Contact: "" });
 
             } else {
               seterrormsg(res.data.error);
@@ -137,33 +137,9 @@ const FoodReqRaise = ({ navigation }) => {
   },[])
   AsyncStorage.getItem("UserLoginCredentials").then((result) => { setuserCredential(result) }).catch((err) => { console.log(err) })
   return (
-    //   <View style = {{flex:1}}>
-    //       <MapView
-    //       style = {StyleSheet.absoluteFill}
-    //       initialRegion={{
-    //         longitude:location != null?location.coords.longitude:72.842230,
-    //         latitude:location != null ? location.coords.latitude:19.075380,
-    //         latitudeDelta: 0.0922,
-    //         longitudeDelta: 0.0421,
-    //       }}
-    //       >
-    //         <Marker
-    //       coordinate={mapLocCords.pickupLocationCord}
-    //       // image={{uri: 'custom_pin'}}
-    //     />
-    //     <MapViewDirections
-    //   origin={mapLocCords.pickupLocationCord}
-    //   destination={mapLocCords.droplocationCord}
-    //   // apikey={GOOGLE_MAPS_APIKEY}
-    //   strokeWidth={3}
-    //   strokeColor="hotpink"
-    // />
-    //     </MapView>
-    //     </View>
-
-
     <View style={styles.container}>
       <ScrollView style={styles.Scrollcontainer}>
+
         <View style={styles.subContainer}>
           <Text style={styles.subConTitle}>Donation Type</Text>
           <View style={[styles.subConBox, { flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }]}>

@@ -74,7 +74,7 @@ export default function AppIntegrated() {
           ],
         }}>
           <View style={styles.Head}>
-            <TouchableOpacity delayPressIn={0} onPressIn={MenuBtnFunc}><View style={styles.headNav}><FontAwesomeIcon color="white" size={32} icon={showMenu ? faXmark : faBars}></FontAwesomeIcon></View></TouchableOpacity>
+            <TouchableOpacity  onPressIn={MenuBtnFunc}><View style={styles.headNav}><FontAwesomeIcon color="white" size={32} icon={showMenu ? faXmark : faBars}></FontAwesomeIcon></View></TouchableOpacity>
             <Text style={styles.title}>{navMenu.val}</Text>
           </View>
           <View style = {{width:"100%",flex:1}}>

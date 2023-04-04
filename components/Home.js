@@ -1,11 +1,12 @@
 
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Animated, Button ,ActivityIndicator} from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Animated, Button ,ActivityIndicator, ImageBackground} from 'react-native'
 import React, { useContext, useEffect, useRef } from 'react';
 import Head from "./Head"
 import { useState } from 'react';
 import axios from 'axios';
+import Ribbion from '../assets/rbnLabel.png'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBars, faBowlFood, faCheckSquare, faClipboardList, faCodePullRequest, faFaceGrin, faFaceSadTear, faFilter, faFilterCircleDollar, faFilterCircleXmark, faIdBadge, faLocationPin, faNoteSticky, faRefresh, faSadTear, faSquareCheck, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faBowlFood, faCalendarAlt, faCheckSquare, faCity, faClipboardList, faCodePullRequest, faFaceGrin, faFaceSadTear, faFilter, faFilterCircleDollar, faFilterCircleXmark, faIdBadge, faListNumeric, faLocationPin, faNoteSticky, faRefresh, faSadTear, faSquareCheck, faStopwatch, faUserAlt, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar, faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -19,9 +20,8 @@ export default function Home() {
   const [showOther, setShowOther] = useState(false);
   const [reqfoodData, setreqfoodData] = useState([]);
   const [status, setStatus] = useState(0);
-  const [ReqDetail, showReqDetail] = useState(false)
+  const [ReqType, setRequestType] = useState("Pending")
   const [userCredential,setuserCredential] = useState([]);
-  const [userFoodDetail ,setuserFoodeDetail] = useState({showReqDetail :ReqDetail});
   const  navigation = useNavigation()
   // const userCredential = useContext(CredentialContext);
   // console.log(userCredential.storedCredential._id)
@@ -33,14 +33,14 @@ export default function Home() {
       setLoading(false);
     }, 500);
   };  
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+  // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
 
   const getReqData = async (usrCredential) => {
-    const Url = `/getfood`;
+    const Url = "http://192.168.31.203:8000/getfood";
     try {
       const uId = usrCredential._id;
-      const bd = { userId: uId, showOth: showOther }
-      console.log("cred",usrCredential);
+      const bd = { userId: uId, showOth: showOther ,role:"NGO",status:ReqType}
+      // console.log("cred",usrCredential);
       return await axios.post(Url, bd)
         .then((res) => {
           if (res.status == 200) {
@@ -73,9 +73,9 @@ export default function Home() {
   useEffect(() => {
     getData();
     console.log(userCredential)
-    // getReqData()
+    getReqData(userCredential)
     startLoading();
-  }, [showOther])
+  }, [showOther,ReqType])
 
 
   return (
@@ -87,28 +87,27 @@ export default function Home() {
 
       </View>
       <View style={styles.stsbutCont}>
-        <TouchableOpacity style={{ width: 105 }} onPressIn={() => { setStatus(0) }}><Text style={[styles.statusBtn, { borderColor: "#2eb82e", color: "#2eb82e" }, status == 0 ? { color: "white", backgroundColor: "#009933", borderRadius: 5 } : {}]}>
-          <FontAwesomeIcon size={13} icon={faCheckCircle} color={status == 0 ? "white" : "#2eb82e"}></FontAwesomeIcon>  APPROVE</Text></TouchableOpacity>
+        <TouchableOpacity style={{ width: 105 }} onPressIn={() => { setStatus(0);setRequestType("Pending") }}><Text style={[styles.statusBtn, { color: "tomato", borderColor: "tomato" }, status == 0 ? { color: "white", backgroundColor: "tomato", borderRadius: 5 } : {}]}>
+          <FontAwesomeIcon size={13} icon={faCheckCircle} color={status == 0 ? "white" : "tomato"}></FontAwesomeIcon>  PENDING</Text></TouchableOpacity>
 
-        <TouchableOpacity style={{ width: 105 }} onPressIn={() => { setStatus(1) }}><Text style={[styles.statusBtn, { color: "tomato", borderColor: "tomato" }, status == 1 ? { color: "white", backgroundColor: "tomato", borderRadius: 5 } : {}]}>
-          <FontAwesomeIcon size={13} icon={faCheckCircle} color={status == 1 ? "white" : "tomato"}></FontAwesomeIcon>  PENDING</Text></TouchableOpacity>
+        <TouchableOpacity style={{ width: 105 }} onPressIn={() => { setStatus(1);setRequestType("Accept") }}><Text style={[styles.statusBtn, { borderColor: "#2eb82e", color: "#2eb82e" }, status == 1 ? { color: "white", backgroundColor: "#009933", borderRadius: 5 } : {}]}>
+          <FontAwesomeIcon size={13} icon={faCheckCircle} color={status == 1 ? "white" : "#2eb82e"}></FontAwesomeIcon>  APPROVE</Text></TouchableOpacity>
 
-        <TouchableOpacity style={{ width: 105 }} onPressIn={() => { setStatus(2) }}><Text style={[styles.statusBtn, { color: "royalblue", borderColor: "royalblue" }, status == 2 ? { color: "white", backgroundColor: "royalblue", borderRadius: 5 } : {}]}>
+        <TouchableOpacity style={{ width: 105 }} onPressIn={() => { setStatus(2);setRequestType("Delivered") }}><Text style={[styles.statusBtn, { color: "royalblue", borderColor: "royalblue" }, status == 2 ? { color: "white", backgroundColor: "royalblue", borderRadius: 5 } : {}]}>
           <FontAwesomeIcon size={13} icon={faCheckCircle} color={status == 2 ? "white" : "royalblue"}></FontAwesomeIcon>  DELIVERED</Text></TouchableOpacity>
 
       </View>
 
-      {
+      {/* {
         filter && <View style={styles.filtercontainer}>
           <View style={[styles.filterBox, styles.shadow]}>
             <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon={faRefresh}></FontAwesomeIcon> Recent</Text></TouchableOpacity>
             <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon={faCalendar}></FontAwesomeIcon> Date</Text></TouchableOpacity>
             <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon={faLocationPin}></FontAwesomeIcon> Location</Text></TouchableOpacity>
-
           </View>
 
         </View>
-      }
+      } */}
       {loading ? (
               <View style={{flexGrow:1,fontSize:30,justifyContent:"center",alignItems:"center"}}>
 
@@ -124,16 +123,21 @@ export default function Home() {
       <ScrollView style={styles.requestCont}>
         {
           reqfoodData.map((data) => {
-          return (<TouchableOpacity onPress={() => { navigation.navigate("CheckInfo",{params:data})}} style={[styles.reqBox, styles.shadow]} key={data._id} >
+          return (<TouchableOpacity onPress={() => { navigation.navigate("CheckInfo",{params:data})}} style={[styles.reqBox, styles.shadow,data.Status == "Accept" && {borderColor:"lightgreen",backgroundColor: "#39ac73"}]} key={data._id} >
+                    <View style = {styles.label}>
+                    <ImageBackground source={Ribbion} style={styles.Ribbionimage}>
+                      <Text style ={{color:"white",fontWeight:'600',transform:[{rotateZ:"45deg"},{translateX:5},{translateY:-13}]}} >{data.Role}</Text>
+                    </ImageBackground>
+                    </View>
               <View style={styles.box1}>
-                <Text style={styles.reqId}>RequestId: {data.UserId}</Text>
-                <Text style={styles.reqDetail}><Text style={{ color: "royalblue", fontWeight: "700" }}>Name: </Text>{data.Name}</Text>
-                <Text style={styles.reqDetail}><Text style={{ color: "royalblue", fontWeight: "700" }}>FeedCount: </Text> {data.Feedcount}</Text>
-                <Text style={styles.reqDetail}><Text style={{ color: "royalblue", fontWeight: "700" }}>City: </Text> {data.City}</Text>
+                <Text style={styles.reqId}>RequestId: {data._id}</Text>
+                <Text style={styles.reqDetail}><Text style={{ color:data.Status == "Pending"?'#0088cc':"lightgreen", fontWeight: "700" }}><FontAwesomeIcon color='#e6f2ff' size={11} icon = {faUserAlt}></FontAwesomeIcon> Name : </Text>{data.Name}</Text>
+                <Text style={styles.reqDetail}><Text style={{ color: data.Status == "Pending"?'#0088cc':"lightgreen", fontWeight: "700" }}><FontAwesomeIcon color='#e6f2ff' size={11} icon = {faListNumeric}></FontAwesomeIcon> FeedCount : </Text> {data.Feedcount}</Text>
+                <Text style={styles.reqDetail}><Text style={{ color: data.Status == "Pending"?'#0088cc':"lightgreen", fontWeight: "700" }}><FontAwesomeIcon color='#e6f2ff' size={11} icon = {faCity}></FontAwesomeIcon> City : </Text> {data.City}</Text>
               </View>
               <View style={styles.box2}>
-                <TouchableOpacity><Text style={[styles.reqStateBtn, { color: data.Status == "Pending" ? "red" : "green" }]}>{data.Status}</Text></TouchableOpacity>
-                <Text style={styles.date}>{data.Date}  {data.Time}</Text>
+                {/* <TouchableOpacity><Text style={[styles.reqStateBtn, { color: data.Status == "Pending" ? "red" : "green" }]}>{data.Status}</Text></TouchableOpacity> */}
+                <Text style={[styles.date,data.Status == "Accept" && {color:"lightgreen"}]}><FontAwesomeIcon color={data.Status == "Pending"?'#0088cc':"white"} size={10} icon = {faCalendarAlt}></FontAwesomeIcon> {data.Date}  <FontAwesomeIcon color={data.Status == "Pending"?'#0088cc':"white"} size={10} icon = {faStopwatch}></FontAwesomeIcon>{data.Time}</Text>
               </View>
             </TouchableOpacity>
           )
@@ -215,6 +219,21 @@ const styles = StyleSheet.create({
     elevation: 5,
 
   },
+  label:{
+    position:"absolute",
+    // backgroundColor:"white",
+    top:-13,
+    right:-8,
+    width:70,
+    height:70,
+    zIndex:50,
+
+  },
+  Ribbionimage:{
+    flexGrow:1,
+    justifyContent:"center",
+    alignItems:"center",
+  },
   btn: {
     paddingVertical: 10,
     textAlign: "center",
@@ -272,9 +291,10 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingVertical: 20,
     flexDirection: "column",
-    marginTop: 5,
+    marginTop: 1,
   },
   reqBox: {
+    position:"relative",
     alignSelf: "center",
     marginBottom: 10,
     paddingVertical: 15,
@@ -283,10 +303,13 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: "lightblue",
+    borderColor:"#0088cc",
+    borderWidth:2,
+    backgroundColor: "#66ccff",
+    marginTop:3,
   },
   reqId: {
-    color: "gray",
+    color: "white",
     fontSize: 10,
     paddingLeft: 5,
   },
@@ -294,6 +317,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#220",
     paddingVertical: 5,
+    color:"white",
   },
   box2: {
     flexDirection: "column",
@@ -303,7 +327,7 @@ const styles = StyleSheet.create({
   reqStateBtn: {
     paddingVertical: 5,
     paddingHorizontal: 13,
-    borderColor: "gray",
+    borderColor: "white",
     borderRadius: 5,
     borderWidth: 1,
     // backgroundColor:"white",
@@ -312,7 +336,7 @@ const styles = StyleSheet.create({
   },
   date: {
     marginTop: 10,
-    color: 'green',
+    color: 'white',
     fontSize: 12,
 
   },

@@ -8,6 +8,7 @@ import {  faBuildingNgo, faCodeFork, faDoorOpen, faHotel, faObjectGroup, faPeopl
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import  {CredentialContext} from '../components/CredentialContext'
 import {MenuContext} from './Context';
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 function Navbar(prp) {
@@ -23,12 +24,13 @@ function Navbar(prp) {
         <View style={styles.container}>
             {/* <TouchableOpacity ><Text style = {styles.closeTabBtn}>X</Text></TouchableOpacity> */}
             <View style={styles.NavImageCont}>
+    
                 <Image source={LogHome} style={styles.NavImage}></Image>
                 <Text style = {styles.nameTitle}>{contextCall?contextCall.storedCredential.name:"Unknown"}</Text>
             </View>
             <View style={styles.NavBtnContainer}>
-                <TouchableOpacity onPress={()=>{menuCall.setNavMenu({tab:1,val:"Home"});HandleNav("Home")}}><Text style={[styles.NavBtn,menuCall.navMenu.tab==1 &&{color:"white",backgroundColor:"#008060"}]}><FontAwesomeIcon style={[styles.NavBtn,menuCall.navMenu.tab==1 &&{backgroundColor:"#008060"}]} color = "white" size={25} icon = {faPlateWheat}></FontAwesomeIcon> Restaurant Request</Text></TouchableOpacity>
-                <TouchableOpacity onPress={()=>{menuCall.setNavMenu({tab:2,val:"Home"});HandleNav("Home2")}}><Text style={[styles.NavBtn,menuCall.navMenu.tab==2 &&{color:"white",backgroundColor:"#008060"}]}><FontAwesomeIcon style={[styles.NavBtn,menuCall.navMenu.tab==2 &&{backgroundColor:"#008060"}]} color = "white" size={25} icon = {faBuildingNgo}></FontAwesomeIcon> NGO'S</Text></TouchableOpacity>
+                <TouchableOpacity onPress={()=>{menuCall.setNavMenu({tab:1,val:"Home"});HandleNav("Home")}}><Text style={[styles.NavBtn,menuCall.navMenu.tab==1 &&{color:"white",backgroundColor:"#008060"}]}><FontAwesomeIcon style={[styles.NavBtn,menuCall.navMenu.tab==1 &&{backgroundColor:"#008060"}]} color = "white" size={25} icon = {faPlateWheat}></FontAwesomeIcon> NGO'S</Text></TouchableOpacity>
+                <TouchableOpacity onPress={()=>{menuCall.setNavMenu({tab:2,val:"Home"});HandleNav("Home2")}}><Text style={[styles.NavBtn,menuCall.navMenu.tab==2 &&{color:"white",backgroundColor:"#008060"}]}><FontAwesomeIcon style={[styles.NavBtn,menuCall.navMenu.tab==2 &&{backgroundColor:"#008060"}]} color = "white" size={25} icon = {faBuildingNgo}></FontAwesomeIcon> Restaurant Request</Text></TouchableOpacity>
                 <TouchableOpacity onPress={()=>{menuCall.setNavMenu({tab:3,val:"Employees Detail"});HandleNav("Employee")}}><Text style={[styles.NavBtn,menuCall.navMenu.tab==3 &&{color:"white",backgroundColor:"#008060"}]}><FontAwesomeIcon style={[styles.NavBtn,menuCall.navMenu.tab==3 &&{backgroundColor:"#008060"}]} color = "white" size={25} icon = {faPeopleGroup}></FontAwesomeIcon> Employees</Text></TouchableOpacity>
             </View>
             <View style={{marginBottom:20}}>
@@ -92,9 +94,10 @@ const styles = StyleSheet.create({
         marginBottom:10,
     },
     nameTitle:{
-        fontSize:20,
+        fontSize:25,
         color:"#0077b3",
         textAlign:"center",
+        fontWeight:"500",
         width: 250,
         padding:5,
 

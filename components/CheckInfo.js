@@ -15,12 +15,30 @@ export default function CheckInfo({route}) {
     // console.log(foodInfoDetail)
     return (
         <View style = {styles.container}>
+            <View style = {{flex:1,zIndex:2,position:"absolute",left:0,right:0,top:0,bottom:0,opacity:0.5,backgroundColor:"black"}}>
+
+            </View>
+            <LinearGradient 
+            colors = {["#006699","#2597f4","#1ab2ff"]}
+            useAngle={true}
+            angle={95}
+            angleCenter= {{ x: 0.5, y: 0.5 }}
+            style ={{zIndex:1,position:"absolute",left:-3,top:-3,width:"90%",borderBottomRightRadius:600,height:300,borderColor:"#80bfff",borderWidth:3}}>
+
+            </LinearGradient>
+            <LinearGradient 
+            colors = {["#2597f4","#0a6fc2",'#0044cc']}
+            style ={{zIndex:1,position:"absolute",right:-3,bottom:-3,width:"80%",borderTopLeftRadius:600,height:300,borderColor:"#80bfff",borderWidth:3}}>
+
+            </LinearGradient>
         
-            <TouchableOpacity  onPress = {()=>{navigation.navigate("AppIntegrated")}}><FontAwesomeIcon style = {styles.closeTabBtn} color = "royalblue"  size = {32} icon ={faXmark}></FontAwesomeIcon></TouchableOpacity>
+            <TouchableOpacity  onPress = {()=>{navigation.navigate("AppIntegrated")}} style={{zIndex:100}}><FontAwesomeIcon style = {styles.closeTabBtn} color = "#e6f9ff"  size = {32} icon ={faXmark}></FontAwesomeIcon></TouchableOpacity>
             
-            <View style={styles.Infocontainer}>
+            <View style={[styles.Infocontainer,styles.shadow]}>
             <LinearGradient
-            colors ={["#35af75","#35AF75"]}>
+            colors ={["#35af75","#35AF75"]}
+            style={{borderRadius: 10}}
+            >
                 <View style={styles.Information}>
                     <TouchableOpacity  onPress = {()=>{navigation.navigate("Map",{params:foodInfoDetail?.Location})}}>
                     <LinearGradient
@@ -31,18 +49,29 @@ export default function CheckInfo({route}) {
                         </LinearGradient>
                     </TouchableOpacity>
 
-                    <View style={styles.InfotxtContainer}>
-                        <Text style={styles.options}>Name      : {foodInfoDetail?.Name}</Text>
-                        <Text style={styles.options}>Address   : {foodInfoDetail?.Address}</Text>
-                        <Text style={styles.options}>City      : {foodInfoDetail?.City}</Text>
-                        <Text style={styles.options}>Type      : {foodInfoDetail?.Type}</Text>
-                        <Text style={styles.options}>Vehicle   : {foodInfoDetail?.Vehicle}</Text>
-                        <Text style={styles.options}>Date      : {foodInfoDetail?.Date}</Text>
-                        <Text style={styles.options}>Time      : {foodInfoDetail?.Time}</Text>
-                        <Text style={styles.options}>Request ID: {foodInfoDetail?._id}</Text>
-                        <Text style={styles.options}>Mobile    : {foodInfoDetail?.Contact}</Text>
-                    </View>
-                    <TouchableOpacity onPress={()=>{navigation.navigate("AssignEmp",{params:foodInfoDetail})}} style = {styles.Infobtn}>
+                    <ScrollView  style={styles.InfotxtContainer}>
+                        <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Name</Text>      :{foodInfoDetail?.Name}</Text>
+                        <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Address</Text>   : {foodInfoDetail?.Address}</Text>
+                        <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>City</Text>      : {foodInfoDetail?.City}</Text>
+                        <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Type</Text>      : {foodInfoDetail?.Type}</Text>
+                        <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Vehicle</Text>   : {foodInfoDetail?.Vehicle}</Text>
+                        <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Date</Text>      : {foodInfoDetail?.Date}</Text>
+                        <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Time</Text>      : {foodInfoDetail?.Time}</Text>
+                        <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Req ID</Text>    : {foodInfoDetail?._id}</Text>
+                        <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Mobile</Text>    : {foodInfoDetail?.Contact}</Text>
+
+                        {
+                           foodInfoDetail?.AssignVolunteer  && <>
+                            <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Employee Name</Text>  : {foodInfoDetail?.AssignVolunteer?.Name}</Text>
+                            <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Employee Phone</Text>  : {foodInfoDetail?.AssignVolunteer?.Contact}</Text>
+                            <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Employee Email</Text>  : {foodInfoDetail?.AssignVolunteer?.EmpId}</Text>
+
+                            </>
+                        }
+
+                    </ScrollView>
+                    {
+                       foodInfoDetail.Status == "Pending" && <TouchableOpacity onPress={()=>{navigation.navigate("AssignEmp",{params:foodInfoDetail})}} style = {styles.Infobtn}>
                         <LinearGradient
                         colors = {["#2196F3","#0a6fc2"]}
                         style={styles.InfoTxtbtn}>
@@ -50,6 +79,7 @@ export default function CheckInfo({route}) {
 
                         </LinearGradient>
                         </TouchableOpacity>
+                    }
 
                 </View>
                 </LinearGradient>
@@ -61,10 +91,11 @@ export default function CheckInfo({route}) {
 const styles = StyleSheet.create({
     container: {
         width:"100%",
-        paddingTop: Constants.statusBarHeight,
+        marginTop: Constants.statusBarHeight,
         flex: 1,
-        backgroundColor: '#bfbfbf',
+        backgroundColor: '#ccccff',
         position:"relative",
+        overflow:"hidden",
     },
     closeTabBtn: {
         position: "absolute",
@@ -72,23 +103,25 @@ const styles = StyleSheet.create({
         top: 15,
         width: 40,
         height: 40,
-        zIndex: 5,
+        zIndex: 10,
     },
     Infocontainer: {
         position:"relative",
         flex: 1,
         alignItems: 'center',
         justifyContent: "center",
+        zIndex: 10,
+
     },
     Information: {
-        borderWidth: 1,
+        borderWidth: 2,
         width: 350,
         height: 600,
         borderColor: 'lightgray',
         flexDirection: 'column',
         // backgroundColor: '#35AF75',
         justifyContent:"space-between",
-        borderRadius: 4,
+        borderRadius: 10,
         padding:10,
 
 
@@ -145,5 +178,16 @@ const styles = StyleSheet.create({
         borderWidth: 2,
 
 
+    },
+    shadow: {
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 10,
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 3.84,
+      elevation: 5,
+  
     },
 })

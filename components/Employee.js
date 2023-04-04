@@ -17,8 +17,8 @@ export default function Employee() {
   const [userCredential, setuserCredential] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
-
+  axios.defaults.baseURL = `http://192.168.31.203:8000`;
+  // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
   const getEmployeeDetail = async (usrCredential) => {
     const url = `/Employees`;
     try {
@@ -64,7 +64,7 @@ export default function Employee() {
   };  
   useEffect(() => {
     getData()
-    // getEmployeeDetail();
+    // getEmployeeDetail(userCredential);
     startLoading();
 
   }, [])
