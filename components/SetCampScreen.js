@@ -5,6 +5,8 @@
     TextInput
   } from 'react-native';  import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
+  const GOOGLE_API_KEY = "AIzaSyBPsF9meOyA8d6GtpMR6TTvF4hPaetULUs";
+
   const SetCampScreen = ()=> {
     const [Location ,setLocation] = useState("");
     
@@ -13,8 +15,8 @@
       setLocation(data);
     }
     return (
-        <ScrollView contentContainerStyle={{width:500,flexGrow : 1, justifyContent : 'center',backgroundColor:"red"}}>
-            <View style={styles.container}>
+        <ScrollView contentContainerStyle={{width:"100%",flexGrow : 1, justifyContent : 'center',backgroundColor:"red"}} keyboardShouldPersistTaps={'handled'}>
+            <View style={styles.container} keyboardShouldPersistTaps={'handled'}>
 
               <GooglePlacesAutocomplete
               placeholder="Where are you?"
@@ -33,7 +35,7 @@
                 borderRadius: 0,
                 marginLeft: 0,
                 marginRight: 0,
-                marginTop: 0,
+                marginTop: 30,
                 height: 50,
                 borderWidth: 1,
                 borderColor: '#000',
@@ -52,7 +54,7 @@
               }}
               query={{
               // available options: https://developers.google.com/places/web-service/autocomplete
-              key: 'API_KEY',
+              key: GOOGLE_API_KEY,
               language: 'en', // language of the results
               }}
 
@@ -72,7 +74,7 @@
   const styles = {
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: 'green',
         // justifyContent: 'center'
     },
     textInputStyle: {

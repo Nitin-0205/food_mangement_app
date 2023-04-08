@@ -34,7 +34,7 @@ const Home2 = () => {
 
   const getReqData = async (usrCredential) => {
     // const Url = `/getfood`;
-    const Url = "http://192.168.31.203:8000/getfood";
+    const Url = "http://192.168.31.80:8000/getfood";
 
     try {
       const uId = usrCredential._id;

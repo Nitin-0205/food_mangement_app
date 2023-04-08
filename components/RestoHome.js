@@ -56,6 +56,19 @@ export default function RestoHome() {
           <Text style={styles.lowertxt}>Donate</Text>
         </View>
         <View>
+          <TouchableOpacity onPress={() => { navigation.navigate("RestoMap") }} style={[styles.donationbtn, styles.shadow]}>
+            {/* <Image style={styles.lowerimg} source={require('../assets/icon.png')} /> */}
+            <LinearGradient
+              colors={['tomato','red']}
+              style={{ padding: 15, alignItems: 'center', borderRadius: 5 }}>
+              <FontAwesomeIcon color="white" size={30} icon={faBowlFood}></FontAwesomeIcon>
+
+            </LinearGradient>
+          </TouchableOpacity>
+          <Text style={styles.lowertxt}>Current</Text>
+          <Text style={[styles.lowertxt,{marginTop:0}]}>Location</Text>
+        </View>
+        <View>
           <TouchableOpacity onPress={() => { navigation.navigate("RestoHistory") }} style={[styles.donationbtn, styles.shadow]}>
             {/* <Image style={styles.lowerimg} source={require('../assets/icon.png')} /> */}
             <LinearGradient
@@ -179,6 +192,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 18,
     marginTop: 10,
+    textAlign:"center",
 
   },
   lowerimg: {

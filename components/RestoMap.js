@@ -7,6 +7,7 @@ import MapView, { Callout, Circle, Marker } from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
+import axios from "axios";
 
 const Map = ({ route }) => {
 	const [location, setLocation] = useState(null);
@@ -41,11 +42,32 @@ const Map = ({ route }) => {
 		console.log("myAdd", geoCodeAdd);
 	};
 
-	const getPicklocate = () => {
-		const mapCordinates = route?.params?.params;
-		console.log(mapCordinates);
-		setpickUpLocation(mapCordinates.coords);
-	};
+	// const getPicklocate = () => {
+	// 	const mapCordinates = route?.params?.params;
+	// 	console.log(mapCordinates);
+	// 	setpickUpLocation(mapCordinates.coords);
+	// };
+	axios.defaults.baseURL = `http://192.168.31.80:8000`;
+  // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+  const HandleNgoList = async () => {
+    const url = `/ngos`;
+    try {
+
+      await axios.post(url,
+        { OrgId: oId })
+        .then((res) => {
+          if (res.status == 200) {
+            // setEmpdetail(res.data)
+			console.log(res.data)
+          } else {
+            console.log(res.error)
+          }
+        })
+
+    } catch (error) {
+      console.log("Something Went Wrong ", error)
+    }
+  }
 	const getData = async () => {
 		try {
 			await AsyncStorage.getItem("UserLoginCredentials").then((value) => {
@@ -67,8 +89,8 @@ const Map = ({ route }) => {
 		//   return;
 		// }
 		let location = await Location.getCurrentPositionAsync({});
-		setLocation(location);
-		console.log(location);
+		setpickUpLocation(location.coords);
+		console.log(location.coords);
 
 		console.log("Longitude", location?.coords?.longitude);
 		console.log("Latitude", location?.coords?.latitude);
@@ -82,9 +104,8 @@ const Map = ({ route }) => {
 
 	useEffect(() => {
 		getLocationPermission();
-		getPicklocate();
 		getData();
-		// getLocationPermission();
+		// getPicklocate();
 		// geoCodeLocation();
 		// ReversegeoCodeToLocation();
 	}, []);

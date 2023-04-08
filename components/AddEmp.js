@@ -18,6 +18,7 @@ const AddEmp = ({ navigation }) => {
   const [empDetail, setEmpdetail] = useState({OrgId:"", EmpId: "", Name: "", Contact: null, Address: "" });
   const [errmsg, seterrormsg] = useState(null)
   const [userCredential, setuserCredential] = useState({});
+  
 
   function resetFunc() {
     setEmpdetail({ EmpId: "", Name: "", Contact: null, Address: "" });
@@ -27,7 +28,7 @@ const AddEmp = ({ navigation }) => {
 
   const url = `/addEmployee`;
   const HandlePress = async () => {
-    console.log(userCredential._id );
+    console.log(userCredential._id,empDetail );
     if (userCredential._id == "" || empDetail.EmpId == "" || empDetail.Name == "" || empDetail.Contact == "" || empDetail.Address == "") {
       alert("All Fields are Required !!!")
     } else if (empDetail.Contact.length != 10) {
@@ -92,12 +93,13 @@ const AddEmp = ({ navigation }) => {
         // minLength={2}
         // currentLocation={true}
         fetchDetails={true}
-        
+        textInputProps ={{
+          onChangeText: (text) => {              
+               if (text === "")  setEmpdetail({...empDetail,Address:""})
+          }}
+        }
         onPress={(data, details = null) => {
-          // 'details' is provided when fetchDetails = true
-          setEmpdetail
-          console.log(data, details.adr_address.description);
-
+          setEmpdetail({...empDetail,Address:data.description})
         }}
         query={{
           key: GOOGLE_API_KEY,
