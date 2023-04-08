@@ -90,10 +90,9 @@ export default function CheckInfo({route}) {
 
 const styles = StyleSheet.create({
     container: {
-        width:"100%",
-        marginTop: Constants.statusBarHeight,
         flex: 1,
         backgroundColor: '#ccccff',
+        marginTop: Constants.statusBarHeight,
         position:"relative",
         overflow:"hidden",
     },

@@ -1,5 +1,5 @@
 import { View, Text, Image, TouchableOpacity, StyleSheet, TextInput, Button, } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import employee from "../assets/employee.png";
 import { useState } from 'react';
 import axios from 'axios';
@@ -8,6 +8,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faArrowLeftLong, faArrowsLeftRightToLine, faBackward } from '@fortawesome/free-solid-svg-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+
+
+
+const GOOGLE_API_KEY = "AIzaSyBPsF9meOyA8d6GtpMR6TTvF4hPaetULUs";
 
 const AddEmp = ({ navigation }) => {
   const [empDetail, setEmpdetail] = useState({OrgId:"", EmpId: "", Name: "", Contact: null, Address: "" });
@@ -57,19 +62,63 @@ const AddEmp = ({ navigation }) => {
     }
 
   }
-  AsyncStorage.getItem("UserLoginCredentials").then((result) => { setuserCredential(JSON.parse(result)) }).catch((err) => { console.log(err) })
+  const getData = () => {
+    try {
+      AsyncStorage.getItem("UserLoginCredentials")
+        .then(value => {
+          if (value != null) {
+            var datavalue = JSON.parse(value);
+            setuserCredential(datavalue);
+            // console.log(datavalue)
+          }
+        })
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  useEffect(() => {
+    getData()
+
+  }, [])
 
   return (
     <View style={styles.container}>
       <Text style={styles.addEmpTitle}>New Employee</Text>
       <Image source={employee} style={styles.image}></Image>
       <View style={styles.butCont}>
+      <View style={{position:"relative",width:"100%",height:65}}>
+      <GooglePlacesAutocomplete
+        placeholder="Address"
+        // minLength={2}
+        // currentLocation={true}
+        fetchDetails={true}
+        
+        onPress={(data, details = null) => {
+          // 'details' is provided when fetchDetails = true
+          setEmpdetail
+          console.log(data, details.adr_address.description);
+
+        }}
+        query={{
+          key: GOOGLE_API_KEY,
+          language: "en",
+          components: "country:in",
+          types: "establishment",
+        }}
+        styles={{
+          textInput:{borderBottomColor: "gray",borderBottomWidth: 3},
+          container: {minWidth: 280 ,position:"absolute",maxWidth:"100%",top:0,left:20,right:20,borderRadius: 5,zIndex:10 },
+          listView: { backgroundColor: "gray"},
+        }}
+      />
+      </View>
         <TextInput style={styles.field} placeholder="Employee Id" value={empDetail.EmpId} onChangeText={(id) => { setEmpdetail({ ...empDetail, EmpId: id }) }}></TextInput>
         <TextInput style={styles.field} placeholder="Name" value={empDetail.Name} onChangeText={(name) => { setEmpdetail({ ...empDetail, Name: name }) }}></TextInput>
         <TextInput style={styles.field} placeholder="Contact" value={empDetail.Contact} keyboardType="phone-pad" onChangeText={(con) => { setEmpdetail({ ...empDetail, Contact: con }) }}></TextInput>
-        <TextInput style={[styles.field, { textAlignVertical: "top", paddingTop: 10 }]} multiline={true} placeholder="Address" numberOfLines={5} value={empDetail.Address} onChangeText={(add) => { setEmpdetail({ ...empDetail, Address: add }) }}></TextInput>
+        {/* <TextInput style={[styles.field, { textAlignVertical: "top", paddingTop: 10 }]} multiline={true} placeholder="Address" numberOfLines={5} value={empDetail.Address} onChangeText={(add) => { setEmpdetail({ ...empDetail, Address: add }) }}></TextInput> */}
 
       </View>
+      
       <View style = {styles.btnContainer}>
       <TouchableOpacity onPress={HandlePress}>
             <LinearGradient
@@ -131,7 +180,7 @@ const styles = StyleSheet.create({
   },
   field: {
     minWidth: 280,
-    width: "90%",
+    width: "95%",
     marginVertical: 10,
     marginHorizontal: 20,
     backgroundColor: "white",
@@ -144,10 +193,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   btnContainer:{
-    marginVertical:10,
+    marginVertical:30,
     flexDirection:"row",
     alignItems:"center",
-    justifyContent:'center'
+    justifyContent:'center',
 
 },
 savbtn: {

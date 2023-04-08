@@ -21,7 +21,7 @@ const AssignEmp = ({route}) => {
   console.log(foodInfoDetail);
 
   // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
-    axios.defaults.baseURL = `http://192.168.31.203:8000`;
+    axios.defaults.baseURL = `http://192.168.31.80:8000`;
 
 
   const getEmployeeDetail = (usrCredential) => {

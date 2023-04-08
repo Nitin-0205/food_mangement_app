@@ -62,9 +62,11 @@ useEffect(()=>{
             <Stack.Screen name="Map" component={Map}options={{headerShown:false}}></Stack.Screen>
 
              </>):(
-              <>
+              storedCredential.role === "OTH" ?<>
                 <Stack.Screen name="Resto" component={Resto} options={{headerShown:false}}></Stack.Screen>
-              </>
+              </>:<>
+           <Stack.Screen name="Login" component={Login} options={{headerShown:false}}></Stack.Screen>
+           <Stack.Screen name="SignUp" component={Signup} options={{headerShown:false}}></Stack.Screen></>
              )
            ):<>
            <Stack.Screen name="Login" component={Login} options={{headerShown:false}}></Stack.Screen>

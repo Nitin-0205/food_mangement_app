@@ -16,8 +16,10 @@ export default function Employee() {
   const navigation = useNavigation()
   const [userCredential, setuserCredential] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [employeeInfo ,setEmpInfo] =useState([]);
+  const [showEmpnfo ,setshowEmpnfo] =useState(false);
 
-  axios.defaults.baseURL = `http://192.168.31.203:8000`;
+  axios.defaults.baseURL = `http://192.168.31.80:8000`;
   // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
   const getEmployeeDetail = async (usrCredential) => {
     const url = `/Employees`;
@@ -81,11 +83,11 @@ export default function Employee() {
         ):(empDetail.length > 0 ?<ScrollView style={styles.detailContainer}>
         {
           empDetail.map((emp) => {
-            return <View style={styles.EmpBox} key={emp.Contact}>
+            return <TouchableOpacity style={styles.EmpBox} key={emp.Contact} onPress = {()=>{console.log(emp)}}>
               <Text><Text style={{ color: "gray" }}>Employee ID: {emp.EmpId}</Text></Text>
               <Text><Text style={{ color: "black", fontSize: 18, marginVertical: 10 }}>Name: {emp.Name}</Text></Text>
               <Text><Text style={{ color: "black", fontSize: 18, marginVertical: 10 }}>Contact: {emp.Contact}</Text></Text>
-            </View>
+            </TouchableOpacity>
           })
         }
       </ScrollView>:<View style={{flexGrow:1,fontSize:30,justifyContent:"center",alignItems:"center"}}>

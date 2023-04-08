@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import Home from './Home';
 import Employee from './Employee';
 import Home2 from './Home2';
+import Constants from 'expo-constants';
 
 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -23,7 +24,6 @@ export default function AppIntegrated() {
 
   const offsetValue = useRef(new Animated.Value(0)).current;
   const scaleValue = useRef(new Animated.Value(1)).current;
-  console.log("App Integrated")
   function MenuBtnFunc() {
 
     Animated.parallel([
@@ -43,7 +43,7 @@ export default function AppIntegrated() {
     ]).start()
 
     setShowMenu(!showMenu)
-    console.log(showMenu)
+    // console.log(showMenu)
 
   }
 
@@ -57,7 +57,7 @@ export default function AppIntegrated() {
       <View style={styles.MainContainer}>
         <Navbar></Navbar>
         <Animated.View style={{
-          paddingTop: 30,
+          paddingTop: 5,
           position: 'absolute',
           left: 0,
           right: 0,
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   MainContainer: {
     position: 'absolute',
     flexGrow: 1,
-    paddingTop: 30,
+    marginTop: Constants.statusBarHeight,
     left: 0,
     right: 0,
     top: 0,

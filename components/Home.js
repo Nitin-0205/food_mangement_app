@@ -36,7 +36,7 @@ export default function Home() {
   // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
 
   const getReqData = async (usrCredential) => {
-    const Url = "http://192.168.31.203:8000/getfood";
+    const Url = "http://192.168.31.80:8000/getfood";
     try {
       const uId = usrCredential._id;
       const bd = { userId: uId, showOth: showOther ,role:"NGO",status:ReqType}

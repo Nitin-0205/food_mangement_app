@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native'
 import React, { Component, useContext, useState } from 'react';
-import LogHome from "../assets/LogHome.png";
+import LogHome from "../assets/splash.png";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
 import {  faBuildingNgo, faCodeFork, faDoorOpen, faHotel, faObjectGroup, faPeopleGroup, faPlateWheat } from '@fortawesome/free-solid-svg-icons';
@@ -25,7 +25,7 @@ function Navbar(prp) {
             {/* <TouchableOpacity ><Text style = {styles.closeTabBtn}>X</Text></TouchableOpacity> */}
             <View style={styles.NavImageCont}>
     
-                <Image source={LogHome} style={styles.NavImage}></Image>
+                <LinearGradient colors={["#87f8ba","#56f59e","#9ff9c7"]} style={styles.NavImage}><Image source={LogHome} style={{width:"75%",height:"75%"}}></Image></LinearGradient>
                 <Text style = {styles.nameTitle}>{contextCall?contextCall.storedCredential.name:"Unknown"}</Text>
             </View>
             <View style={styles.NavBtnContainer}>
@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
         borderColor: "lightgray",
         borderWidth: 1,
     },
+
     // closeTabBtn: {
     //     position: "absolute",
     //     right: 10,
@@ -76,6 +77,7 @@ const styles = StyleSheet.create({
     //     borderWidth: 2,
     //     zIndex: 5,
     // },
+
     NavImageCont: {
         marginTop: 50,
         width: 250,
@@ -84,14 +86,16 @@ const styles = StyleSheet.create({
         width: 150,
         height: 150,
         borderColor:"#35AF75",
-        borderRadius:200,
-        borderWidth:4,
-        borderTopWidth:10,
-        borderBottomWidth:10,
+        borderRadius:75,
+        borderWidth:3,
+        borderTopWidth:8,
+        borderBottomWidth:8,
         alignSelf:"center",
-        resizeMode:"center",
         backgroundColor: "#80d4ff",
         marginBottom:10,
+        justifyContent:"center",
+        alignItems:"center",
+        overflow:"hidden"
     },
     nameTitle:{
         fontSize:25,
