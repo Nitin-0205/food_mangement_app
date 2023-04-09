@@ -12,14 +12,16 @@ import MapViewDirections from 'react-native-maps-directions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
+const GOOGLE_API_KEY = "AIzaSyBPsF9meOyA8d6GtpMR6TTvF4hPaetULUs";
 
 const RestoReq = () => {
   const navigation = useNavigation()
 
   const [foodDetail, setfoodDetail] = useState({ contact: "" });
   const [feedcount, setfeedcount] = useState(0);
-  const [Address, setAddress] = useState("");
+  const [Address, setAddress] = useState([]);
   const [isFocus, setIsFocus] = useState({ vehicle: false, city: false });
   const [prefVehicle, setpreVehicle] = useState("");
   const [Cities, setCityDetails] = useState([]);
@@ -36,11 +38,13 @@ const RestoReq = () => {
   const [donatTypOpt, setdonatTypOpt] = useState({ type: ["People", "Animal", "Agriculture"], icon: [faPeopleGroup, faShieldDog, faWheatAlt], checked: 0 })
 
 
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+  axios.defaults.baseURL = `http://192.168.31.203:8000`;
+
   const HandlePress = async () => {
+    console.log("Hello" ,JSON.parse(userCredential).name)
     if (foodDetail.type == "" || JSON.parse(userCredential).name == "" || JSON.parse(userCredential)._id == ""
       || JSON.parse(userCredential).role == "" || feedcount == "" || prefVehicle == "" || foodDetail.city == ""
-      || foodDetail.contact == "" || Address == "" || location == null
+      || foodDetail.contact == "" || Address == [] || location == null
     ) {
 
       console.log(foodDetail.type, JSON.parse(userCredential).name, JSON.parse(userCredential)._id, JSON.parse(userCredential).role, feedcount,
@@ -74,23 +78,6 @@ const RestoReq = () => {
       }
     }
   }
-
-  // const [mapLocCords,setmapLocCords] = useState({
-  //   pickupLocationCord:{
-  //     longitude:72.842230,
-  //     latitude:19.075380 ,
-  //     latitudeDelta: 0.0922,
-  //     longitudeDelta: 0.0421,
-
-  //   },
-  //   droplocationCord:{
-  //     longitude:30.708,
-  //     latitude:76.7179,
-  //     latitudeDelta: 0.0922,
-  //     longitudeDelta: 0.0421,
-  //   }
-  // })
-
   const getLocationPermission = async () => {
     let status = await Location.requestForegroundPermissionsAsync();
     // if(status !== 'granted'){
@@ -99,21 +86,10 @@ const RestoReq = () => {
     // }
     let location = await Location.getCurrentPositionAsync({});
     setLocation(location);
-    console.log("Longitude", location.coords.longitude)
+    console.log("Longitude", location)
     console.log("Latitude", location.coords.latitude)
   }
 
-  // const geoCodeLocation = async ()=>{
-  //   let geoCodeAdd = await Location.geocodeAsync("Mumbai");
-  //   console.log("myAdd",geoCodeAdd);
-
-  // }
-  // const ReversegeoCodeToLocation = async ()=>{
-  //   let longLatPara = {longitude:location.coords.longitude,latitude:location.coords.latitude}
-  //   let geoCodeAdd = await Location.reverseGeocodeAsync(longLatPara);
-  //   console.log(geoCodeAdd);
-
-  // }
 
   const getCityName = async () => {
     axios.get(`http://192.168.31.203:8000/City`)
@@ -124,17 +100,17 @@ const RestoReq = () => {
         console.log(e)
       })
   }
-  const getData = async ()=>{
-    try{
+  const getData = async () => {
+    try {
       await AsyncStorage.getItem("UserLoginCredentials")
-      .then(value =>{
-        if(value != null){
-          var datavalue = JSON.parse(value);
-          setuserCredential(datavalue);
-          console.log(value)
-        }
-      })
-    }catch(err){
+        .then(value => {
+          if (value != null) {
+            setuserCredential(value);
+
+            console.log(value)
+          }
+        })
+    } catch (err) {
       console.log(err);
     }
   }
@@ -154,40 +130,80 @@ const RestoReq = () => {
 
   }, [])
   return (
-    //   <View style = {{flex:1}}>
-    //       <MapView
-    //       style = {StyleSheet.absoluteFill}
-    //       initialRegion={{
-    //         longitude:location != null?location.coords.longitude:72.842230,
-    //         latitude:location != null ? location.coords.latitude:19.075380,
-    //         latitudeDelta: 0.0922,
-    //         longitudeDelta: 0.0421,
-    //       }}
-    //       >
-    //         <Marker
-    //       coordinate={mapLocCords.pickupLocationCord}
-    //       // image={{uri: 'custom_pin'}}
-    //     />
-    //     <MapViewDirections
-    //   origin={mapLocCords.pickupLocationCord}
-    //   destination={mapocCords.droplocationCord}
-    //   // apikey={GOOGLE_MAPS_APIKEY}
-    //   strokeWidth={3}
-    //   strokeColor="hotpink"
-    // />
-    //     </MapView>
-    //     </View>
-
 
     <View style={styles.container}>
-        <LinearGradient 
-        colors={["red","tomato",'#cc0000']}
+      <LinearGradient
+        colors={["red", "tomato", '#cc0000']}
         style={styles.Title}>
-          <Text style = {{color:"white",fontSize:30,fontWeight:"600"}}>DONATE</Text>
+        <Text style={{ color: "white", fontSize: 30, fontWeight: "600" }}>DONATE</Text>
 
-        </LinearGradient>
-      
+      </LinearGradient>
+      <View style={{ marginTop:10,height:60, width: "100%",position:"relative", zIndex: 100 }}>
+
+        <GooglePlacesAutocomplete
+          placeholder="Address"
+          // currentLocation={true}
+          onChangeText ={result=>console.log(result)}
+          enablePoweredByContainer ={false}
+          fetchDetails={true}
+          query={{
+            key: GOOGLE_API_KEY,
+            language: 'en',
+            components: "country:in",
+
+          }}
+          onPress={(data, details = null) => {
+            setAddress(details)
+            setLocation({latitude :details.geometry.location.lat,longitude :details.geometry.location.lng})
+
+          }}
+          textInputProps={{
+            leftIcon: { type: 'font-awesome', name: 'chevron-left' },
+            errorStyle: { color: 'red' },
+          }}
+          styles={{
+            container: { flex: 0, position: "absolute", left: 10, right: 10, top: 0, zIndex: 10, margin: 5 },
+            textInput: {
+              paddingVertical:5,
+              color: 'red',
+              borderColor:"lightgray",
+              borderWidth:1,
+              fontSize: 18,
+            },
+            
+          }
+          }
+        />
+      </View>
+
       <ScrollView style={styles.Scrollcontainer}>
+
+      <View style={styles.subContainer}>
+          <Text style={styles.subConTitle}>City</Text>
+          <Dropdown
+            style={[styles.dropdown, isFocus.city && { borderColor: 'royalblue' }]}
+            placeholderStyle={[styles.placeholderStyle, { color: "#ff8080", }]}
+            selectedTextStyle={[styles.selectedTextStyle, { color: "red", }]}
+            inputSearchStyle={styles.inputSearchStyle}
+            iconStyle={styles.iconStyle}
+            data={Cities}
+            maxHeight={300}
+            labelField="value"
+            valueField="value"
+            search={true}
+            searchPlaceholder='Search'
+            placeholder={!isFocus.city ? 'Select City' : '...'}
+            value={foodDetail.city}
+            onFocus={() => setIsFocus(true)}
+            onBlur={() => setIsFocus(false)}
+            onChange={item => {
+              setfoodDetail({ ...foodDetail, city: item.value });
+              setIsFocus({ ...isFocus, city: false });
+            }}
+
+          />
+
+        </View>
         <View style={styles.subContainer}>
           <Text style={styles.subConTitle}>Donation Type</Text>
           <View style={[styles.subConBox, { flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between" }]}>
@@ -196,7 +212,7 @@ const RestoReq = () => {
                 return (
                   <TouchableOpacity onPress={() => { setdonatTypOpt({ ...donatTypOpt, checked: inx }); setfoodDetail({ ...foodDetail, type: val }) }} key={inx} style={{ flexDirection: "row", margin: 10, alignItems: "center", width: "40%" }}>
                     <FontAwesomeIcon color={donatTypOpt.checked == inx ? "red" : "#ff8080"} size={18} icon={donatTypOpt.icon[inx]}></FontAwesomeIcon>
-                    <Text style={{ marginLeft: 5, color: donatTypOpt.checked == inx ? "red" : "#ff8080", fontSize: 20, fontWeight: donatTypOpt.checked == inx ?"500":"300" }}>{val}</Text>
+                    <Text style={{ marginLeft: 5, color: donatTypOpt.checked == inx ? "red" : "#ff8080", fontSize: 20, fontWeight: donatTypOpt.checked == inx ? "500" : "300" }}>{val}</Text>
                   </TouchableOpacity>
                 )
 
@@ -218,8 +234,8 @@ const RestoReq = () => {
               vehicleOpt.type.map((val, inx) => {
                 return (
                   <TouchableOpacity onPress={() => { setVehicleOpt({ ...vehicleOpt, checked: inx }); setpreVehicle(val) }} key={inx} style={{ flexDirection: "row", margin: 10, alignItems: "center", width: "40%" }}>
-                    <FontAwesomeIcon color={vehicleOpt.checked  == inx ? "red" : "#ff8080"} size={18} icon={vehicleOpt.icon[inx]}></FontAwesomeIcon>
-                    <Text style={{ marginLeft: 5, color: vehicleOpt.checked  == inx ? "red" : "#ff8080", fontSize: 20, fontWeight: vehicleOpt.checked  == inx ?"500":"300" }}>{val}</Text>
+                    <FontAwesomeIcon color={vehicleOpt.checked == inx ? "red" : "#ff8080"} size={18} icon={vehicleOpt.icon[inx]}></FontAwesomeIcon>
+                    <Text style={{ marginLeft: 5, color: vehicleOpt.checked == inx ? "red" : "#ff8080", fontSize: 20, fontWeight: vehicleOpt.checked == inx ? "500" : "300" }}>{val}</Text>
 
                   </TouchableOpacity>
                 )
@@ -230,30 +246,8 @@ const RestoReq = () => {
 
 
 
-        <View style={styles.subContainer}>
-          <Text style={styles.subConTitle}>City</Text>
-          <Dropdown
-            style={[styles.dropdown, isFocus.city && { borderColor: 'royalblue' }]}
-            placeholderStyle={[styles.placeholderStyle, { color: "#ff8080", }]}
-            selectedTextStyle={[styles.selectedTextStyle, { color: "red", }]}
-            inputSearchStyle={styles.inputSearchStyle}
-            iconStyle={styles.iconStyle}
-            data={Cities}
-            maxHeight={300}
-            labelField="value"
-            valueField="value"
-            search={true}
-            placeholder={!isFocus.city ? 'Select City' : '...'}
-            value={foodDetail.city}
-            onFocus={() => setIsFocus(true)}
-            onBlur={() => setIsFocus(false)}
-            onChange={item => {
-              setfoodDetail({ ...foodDetail, city: item.value });
-              setIsFocus({ ...isFocus, city: false });
-            }}
-
-          />
-          <View style={[styles.subContainer, { marginTop: 20 }]}>
+       
+        <View style={[styles.subContainer, { marginTop: 20 }]}>
             <Text style={styles.subConTitle}>Mobile</Text>
             <View style={[styles.subConBox, { paddingVertical: 10, alignItems: "center", justifyContent: "center" }]}>
               <View style={{ width: "100%", paddingHorizontal: 5, flexDirection: 'row', backgroundColor: "#ffcccc", borderRadius: 3 }}>
@@ -263,19 +257,12 @@ const RestoReq = () => {
             </View>
           </View>
 
-        </View>
-
-        <View style={styles.subContainer}>
-          <Text style={styles.subConTitle}>Address</Text>
-          <View style={[styles.subConBox, { flexDirection: 'row', alignItems: "center", justifyContent: "center" }]}>
-            <TextInput multiline numberOfLines={3} style={{ backgroundColor: "#ffcccc", width: "100%", borderRadius: 3, textAlignVertical: "top", padding: 6, fontSize: 18, color: "#b30000" }} value={Address} onChangeText={(add) => { setAddress(add); }}></TextInput>
-          </View>
-        </View>
+       
 
         <View style={styles.btnContainer}>
           <TouchableOpacity onPress={HandlePress}>
             <LinearGradient
-              colors={['#ff6666','#ff6666', 'red']}
+              colors={['#ff6666', '#ff6666', 'red']}
               style={styles.savbtn}>
               <Text style={{ color: "white" }} >Save Detail</Text>
 
@@ -284,7 +271,7 @@ const RestoReq = () => {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => { navigation.navigate("RestoHome") }}>
             <LinearGradient
-              colors={['#ff6666','#ff6666', 'red']}
+              colors={['#ff6666', '#ff6666', 'red']}
               style={styles.savbtn}>
               <Text style={{ color: "white" }} >Back</Text>
 
@@ -294,7 +281,7 @@ const RestoReq = () => {
         </View>
 
       </ScrollView>
-      
+
     </View>
   )
 }
@@ -305,19 +292,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
     alignItems: "center",
-    paddingTop: 30,
+    paddingTop: 0,
   },
-  Title:{
-    width:"100%",
-    paddingVertical:10,
-    justifyContent:"center",
-    alignItems:"center",
-    borderBottomRightRadius:30,
-    borderBottomLeftRadius:30,
+  Title: {
+    width: "100%",
+    paddingVertical: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 30,
 
   },
   Scrollcontainer: {
-    marginVertical: 20,
+    marginBottom: 20,
+    marginTop:20,
     width: "100%",
     flexGrow: 1,
     // backgroundColor: "#33cc33",
@@ -360,7 +348,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     fontSize: 16,
     borderColor: "#ff6600",
-    backgroundColor:"#ff6600",
+    backgroundColor: "#ff6600",
     borderWidth: 2,
     borderRadius: 5,
     marginHorizontal: 15,

@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import RestoHome from './RestoHome';
 import RestoHistory from './RestoHistory';
 import RestoReq from './RestoReq';
+import RestoMap from './RestoMap';
 import  {CredentialContext} from './CredentialContext'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -31,6 +32,8 @@ export default function Resto() {
             <Tab.Screen name="RestoHome" component={RestoHome} options={{headerShown:false}}></Tab.Screen>
             <Tab.Screen name="RestoReq" component={RestoReq} options={{headerShown:false}}></Tab.Screen>
             <Tab.Screen name="RestoHistory" component={RestoHistory} options={{headerShown:false}}></Tab.Screen>
+            <Tab.Screen name="RestoMap" component={RestoMap} options={{headerShown:false}}></Tab.Screen>
+
           </Tab.Navigator>
     </SafeAreaView>
   );

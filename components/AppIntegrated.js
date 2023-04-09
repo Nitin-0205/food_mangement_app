@@ -23,7 +23,6 @@ export default function AppIntegrated() {
 
   const offsetValue = useRef(new Animated.Value(0)).current;
   const scaleValue = useRef(new Animated.Value(1)).current;
-  console.log("App Integrated")
   function MenuBtnFunc() {
 
     Animated.parallel([
