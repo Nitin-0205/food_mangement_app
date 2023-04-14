@@ -50,7 +50,7 @@ useEffect(()=>{
   return (
     <CredentialContext.Provider value={{storedCredential,setstoredCredential}}>
     <NavigationContainer>
-      {/* <View style={styles.container}> */}   
+      <View style={styles.container}>   
         <Stack.Navigator initialRouteName={Login}>
           {storedCredential !== null ? ( 
             storedCredential.role === "NGO" ?(<>
@@ -62,11 +62,11 @@ useEffect(()=>{
             <Stack.Screen name="Map" component={Map}options={{headerShown:false}}></Stack.Screen>
 
              </>):(
-              storedCredential.role === "OTH" ?<>
+              storedCredential.role === "OTH" ?(<>
                 <Stack.Screen name="Resto" component={Resto} options={{headerShown:false}}></Stack.Screen>
-              </>:<>
+              </>):(<>
            <Stack.Screen name="Login" component={Login} options={{headerShown:false}}></Stack.Screen>
-           <Stack.Screen name="SignUp" component={Signup} options={{headerShown:false}}></Stack.Screen></>
+           <Stack.Screen name="SignUp" component={Signup} options={{headerShown:false}}></Stack.Screen></>)
              )
            ):<>
            <Stack.Screen name="Login" component={Login} options={{headerShown:false}}></Stack.Screen>
@@ -74,7 +74,7 @@ useEffect(()=>{
            }
           
          </Stack.Navigator>
-       {/* </View> */}
+       </View>
      </NavigationContainer>
      </CredentialContext.Provider>
   );
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     flex: 1,
     // paddingTop: 30,
     backgroundColor: '#fff',
-    alignItems: 'center',
+    // alignItems: 'center',
     // justifyContent: 'center',
   },
 });

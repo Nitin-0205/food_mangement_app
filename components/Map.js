@@ -1,12 +1,13 @@
-import {faBuildingNgo,faClock,faDirections,faFlag,faHotel,faMapMarkerAlt,} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import React, { useEffect, useState, useRef } from "react";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import MapView, { Callout, Circle, Marker } from "react-native-maps";
-import MapViewDirections from "react-native-maps-directions";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Location from "expo-location";
+import { faBuildingNgo, faHotel, faLocationCrosshairs, faUserAlt } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
+import React, { useEffect, useState, useRef } from 'react';
+import { Dimensions, StyleSheet, Text, View } from "react-native"
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete"
+import MapView, { Callout, Circle, Marker } from "react-native-maps"
+import MapViewDirections from 'react-native-maps-directions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import GooglePlacesInput from './GooglePlacesInput'
+import * as Location from 'expo-location';
 
 const Map = ({ route }) => {
 	const [location, setLocation] = useState(null);
@@ -30,12 +31,10 @@ const Map = ({ route }) => {
 	});
 
 	const geoCodeLocation = async (locate) => {
-		let geoCodeAdd = await Location.geocodeAsync(
-			`${locate.address}` + " " + `${locate.city}`
-		);
-		setdropLocation(geoCodeAdd[0]);
-		console.log("myAdd", geoCodeAdd);
-	};
+		// let geoCodeAdd = await Location.geocodeAsync(`${locate.address}`);
+		setdropLocation({latitude:locate.address.geometry.location.lat,longitude:locate.address.geometry.location.lng})
+		// console.log(locate.address.geometry.location)
+	}
 
 	const getPicklocate = () => {
 		const mapCordinates = route?.params?.params;
@@ -44,17 +43,18 @@ const Map = ({ route }) => {
 	};
 	const getData = async () => {
 		try {
-			await AsyncStorage.getItem("UserLoginCredentials").then((value) => {
-				if (value != null) {
-					var datavalue = JSON.parse(value);
-					// console.log("Credential",value)
-					geoCodeLocation(datavalue);
-				}
-			});
+			await AsyncStorage.getItem("UserLoginCredentials")
+				.then(value => {
+					if (value != null) {
+						var datavalue = JSON.parse(value);
+						console.log("Credential",value)
+						geoCodeLocation(datavalue)
+					}
+				})
 		} catch (err) {
 			console.log(err);
 		}
-	};
+	}
 
 	const getLocationPermission = async () => {
 		let status = await Location.requestForegroundPermissionsAsync();
@@ -64,11 +64,14 @@ const Map = ({ route }) => {
 		// }
 		let location = await Location.getCurrentPositionAsync({});
 		setLocation(location);
-		console.log(location);
+		console.log(location)
 
-		console.log("Longitude", location?.coords?.longitude);
-		console.log("Latitude", location?.coords?.latitude);
-	};
+		console.log("Longitude", location?.coords?.longitude)
+		console.log("Latitude", location?.coords?.latitude)
+		setdropLocation(location?.coords)
+
+	}
+
 
 	//   const ReversegeoCodeToLocation = async ()=>{
 	//     let longLatPara = {longitude:location.coords.longitude,latitude:location.coords.latitude}
@@ -86,18 +89,22 @@ const Map = ({ route }) => {
 	}, []);
 
 	return (
-		<View style={{ marginTop: 50, flex: 1 }}>
+		<View style={{ marginTop: 30, flex: 1 }}>
+			
 			<GooglePlacesAutocomplete
-				placeholder="Search"
-				// minLength={2}
-				// currentLocation={true}
-				fetchDetails={true}
-				GooglePlacesSearchQuery={{
-					rankby: "distance",
+			          enablePoweredByContainer ={false}
+
+			placeholder="Search"
+			// currentLocation={true}
+			fetchDetails={true}
+				query={{
+					key: GOOGLE_API_KEY,
+					language: 'en', 
+					components: "country:in",
+
 				}}
 				onPress={(data, details = null) => {
-					// 'details' is provided when fetchDetails = true
-					console.log(data, details);
+					console.log(data, details)
 					setpickUpLocation({
 						latitude: details.geometry.location.lat,
 						longitude: details.geometry.location.lng,
@@ -105,26 +112,16 @@ const Map = ({ route }) => {
 						longitudeDelta: 0.0421,
 					});
 				}}
-				query={{
-					key: GOOGLE_API_KEY,
-					language: "en",
-					components: "country:in",
-					types: "establishment",
-					radius: 30000,
-					location: `${pickUpLocation.latitude}, ${pickUpLocation.longitude}`,
+				textInputProps={{
+					leftIcon: { type: 'font-awesome', name: 'chevron-left' },
+					errorStyle: { color: 'red' },
 				}}
 				styles={{
-					container: {
-						position: "absolute",
-						left: 3,
-						right: 3,
-						top: 3,
-						zIndex: 1,
-						margin: 5,
-					},
-					listView: { backgroundColor: "white" },
-				}}
+					container: { flex: 0, position: "absolute", left: 3, right: 3, top: 3, zIndex: 1, margin: 5 }
+				}
+				}
 			/>
+
 
 			<MapView
 				style={styles.map}
@@ -135,7 +132,6 @@ const Map = ({ route }) => {
 					latitudeDelta: 0.0922,
 					longitudeDelta: 0.0421,
 				}}
-				provider="google"
 			>
 				<MapViewDirections
 					origin={{
@@ -165,9 +161,9 @@ const Map = ({ route }) => {
 								right: 30,
 								left: 30,
 								top: 100,
-								bottom: 300,
-							},
-						});
+								bottom: 100,
+							}
+						})
 					}}
 				/>
 				<Marker

@@ -16,6 +16,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 function Signup() {
   const navigation = useNavigation()
+  const GOOGLE_API_KEY = "AIzaSyBPsF9meOyA8d6GtpMR6TTvF4hPaetULUs";
+
 
   const [detail, setDetail] = useState({ contact: "" });
   const [cityChoose, setCity] = useState(undefined);
@@ -67,7 +69,9 @@ function Signup() {
 
   //   })
   // }
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+  // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+  axios.defaults.baseURL = `http://192.168.31.203:8000/`;
+
 
   useEffect(() => {
     axios.get(`/City`)
@@ -130,7 +134,43 @@ function Signup() {
   return (
     <View style={styles.container} >
       <Text style={styles.logTitle}>Sign Up</Text>
-    
+      <View style={{ marginTop:10,height:70, width: 250,alignSelf:"center",position:"relative", zIndex: 100 }}>
+        <Text style={styles.fieldLabel}>Address</Text>
+
+        <GooglePlacesAutocomplete
+          placeholder="Address"
+          // currentLocation={true}
+          onChangeText ={result=>console.log(result)}
+          enablePoweredByContainer ={false}
+          fetchDetails={true}
+          query={{
+            key: GOOGLE_API_KEY,
+            language: 'en',
+            components: "country:in",
+
+          }}
+          onPress={(data, details = null) => {
+            setDetail({ ...detail, address: details })
+          }}
+          textInputProps={{
+            leftIcon: { type: 'font-awesome', name: 'chevron-left' },
+            errorStyle: { color: 'red' },
+          }}
+          styles={{
+            container: { flex: 0, position: "absolute", left: 0, right: 0, top: 16, zIndex: 10},
+            textInput: {
+              paddingVertical:5,
+              color: 'red',
+              borderColor:"lightgray",
+              borderWidth:1,
+              fontSize: 17,
+            },
+            
+          }
+          }
+        />
+      </View>
+
       <ScrollView contentContainerStyle={styles.scroolCon} keyboardShouldPersistTaps={'handled'}>
 
         <View>
@@ -172,27 +212,16 @@ function Signup() {
             )}
           />
         </View>
+
         <View>
           <Text style={styles.fieldLabel} >Contact</Text>
           <TextInput keyboardType='phone-pad' style={styles.fields} placeholder="" value={detail.contact} onChangeText={(txt) => { if (detail.contact.length < 10) { setDetail({ ...detail, contact: txt }) } }}></TextInput>
 
         </View>
+        
+        
 
-        {/* <SelectList
 
-          onSelect={() => { console.log(cityChoose) }}
-          setSelected={(val) => { setCity(val) }}
-          // fontFamily='lato'
-          arrowicon={<FontAwesomeIcon icon={faCity} size={12} color={'black'} />}
-          // searchicon={<FontAwesomeIcon name="search" size={12} color={'black'} />} 
-          search={true}
-          boxStyles={[styles.fields, { marginBottom: 20 }]} //override default styles
-          defaultOption={Cities[0]}
-          checkBoxStyles={{ color: "green", backgroundColor: "red" }}
-          placeholder="City"
-          maxHeight={200}
-          maxWidth = {250}
-          data={Cities} /> */}
 
         <View style={styles.dropcontainer}>
           {renderLabel("City")}
@@ -222,20 +251,15 @@ function Signup() {
           />
         </View>
 
-        <View style ={{width:"80%"}}>
-        
-        </View>
-    
-        <View>
-          <Text style={styles.fieldLabel}>Address</Text>
-          <TextInput style={[styles.fields, { textAlignVertical: "top", maxHeight: 120 }]} multiline={true} numberOfLines={3} placeholder="" value={detail.address} onChangeText={(txt) => { setDetail({ ...detail, address: txt }) }}></TextInput>
+        <View style={{ width: "80%" }}>
 
         </View>
+
         <View>
           <Text style={styles.fieldLabel}>Password</Text>
           <View style={{ marginBottom: 25, flexDirection: "row", height: 48, backgroundColor: "white", width: 250, borderColor: "lightgray", borderWidth: 2, borderRadius: 5 }}>
             <TextInput style={{ padding: 8, fontSize: 17, flexGrow: 1, backgroundColor: "white", borderRadius: 5 }} placeholder="" secureTextEntry={passVisible} value={detail.password} onChangeText={(txt) => { setDetail({ ...detail, password: txt }) }}></TextInput>
-            <TouchableOpacity onPress={() => { setpassVisible(!passVisible) }} style={{ width: 35, height: "100%", justifyContent: "center", alignItems: "center" }}><FontAwesomeIcon color="gray" size={16} icon={passVisible ? faEyeSlash:faEye}></FontAwesomeIcon></TouchableOpacity>
+            <TouchableOpacity onPress={() => { setpassVisible(!passVisible) }} style={{ width: 35, height: "100%", justifyContent: "center", alignItems: "center" }}><FontAwesomeIcon color="gray" size={16} icon={passVisible ? faEyeSlash : faEye}></FontAwesomeIcon></TouchableOpacity>
           </View>
         </View>
         <View>
@@ -245,7 +269,7 @@ function Signup() {
             <TouchableOpacity onPress={() => { setconpassVisible(!conpassVisible) }} style={{ width: 35, height: "100%", justifyContent: "center", alignItems: "center" }}><FontAwesomeIcon color="gray" size={16} icon={conpassVisible ?  faEyeSlash:faEye}></FontAwesomeIcon></TouchableOpacity>
           </View>
         </View>
-        <View style={styles.btnContainer}>
+      <View style={styles.btnContainer}>
           <TouchableOpacity onPress={handleSubmit}>
             <LinearGradient
               colors={["#4687C2", "#79a7d2"]}
@@ -281,15 +305,12 @@ const styles = StyleSheet.create({
   scroolCon: {
     flexGrow: 1,
     width: "100%",
-    // backgroundColor: "azure",
     alignItems: "center",
-    justifyContent: "center",
-    paddingBottom: 50,
-
-
+    justifyContent: "flex-start",
+    paddingTop: 10,
   },
   logContainer: {
-    marginTop: 250,
+    // marginTop: 250,
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
@@ -303,7 +324,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingVertical: 5,
     borderRadius: 5,
-    marginTop: 10,
   },
   fieldLabel: {
     color: "gray",
@@ -319,7 +339,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     borderWidth: 1,
     backgroundColor: 'white',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   btnContainer: {
     marginVertical: 10,

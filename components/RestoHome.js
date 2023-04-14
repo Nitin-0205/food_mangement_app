@@ -1,4 +1,4 @@
-import { faBowlFood, faDonate, faDoorOpen, faHistory } from '@fortawesome/free-solid-svg-icons';
+import { faBowlFood, faDonate, faDoorOpen, faHistory, faMapLocation, faMapLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { StatusBar } from 'expo-status-bar';
 import React, { useContext, useState } from 'react';
@@ -61,12 +61,16 @@ export default function RestoHome() {
             <LinearGradient
               colors={['tomato','red']}
               style={{ padding: 15, alignItems: 'center', borderRadius: 5 }}>
-              <FontAwesomeIcon color="white" size={30} icon={faBowlFood}></FontAwesomeIcon>
+              <FontAwesomeIcon color="white" size={30} icon={faMapLocationDot}></FontAwesomeIcon>
 
             </LinearGradient>
           </TouchableOpacity>
+          <View>
           <Text style={styles.lowertxt}>Current</Text>
           <Text style={[styles.lowertxt,{marginTop:0}]}>Location</Text>
+
+
+          </View>
         </View>
         <View>
           <TouchableOpacity onPress={() => { navigation.navigate("RestoHistory") }} style={[styles.donationbtn, styles.shadow]}>
@@ -189,6 +193,7 @@ const styles = StyleSheet.create({
   }
   ,
   lowertxt: {
+    textAlign:"center",
     fontWeight: 'bold',
     fontSize: 18,
     marginTop: 10,

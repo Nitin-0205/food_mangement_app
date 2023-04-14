@@ -1,26 +1,27 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Animated, Button ,ActivityIndicator} from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Animated, Button, ActivityIndicator, ImageBackground } from 'react-native'
 import React, { useContext, useEffect, useRef } from 'react';
 import Head from "./Head"
 import { useState } from 'react';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowLeftLong, faBars, faBowlFood, faCheckSquare, faClipboardList, faCodePullRequest, faFaceGrin, faFaceSadTear, faFilter, faFilterCircleDollar, faFilterCircleXmark, faIdBadge, faLocationPin, faNoteSticky, faRefresh, faSadTear, faSquareCheck, faStepBackward, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeftLong, faBars, faBowlFood, faCalendarAlt, faCheckSquare, faCity, faClipboardList, faCodePullRequest, faFaceGrin, faFaceSadTear, faFilter, faFilterCircleDollar, faFilterCircleXmark, faHistory, faIdBadge, faList, faListNumeric, faLocationPin, faNoteSticky, faRefresh, faSadTear, faSquareCheck, faStepBackward, faStopwatch, faUserAlt, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { faCalendar, faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import Ribbion from '../assets/rbnLabel.png'
 
 
 
 export default function RestoHistory() {
   const [filter, setfilter] = useState(false);
   const [errmsg, seterrmsg] = useState();
-  const [showOther, setShowOther] = useState(false);
+  const [showTab, setShowTab] = useState({status:"Pending",current: 0 });
   const [reqfoodData, setreqfoodData] = useState([]);
   const [status, setStatus] = useState(0);
   const [ReqDetail, showReqDetail] = useState(false)
-  const [userCredential,setuserCredential] = useState([]);
-  const [userFoodDetail ,setuserFoodeDetail] = useState({showReqDetail :ReqDetail});
-  const  navigation = useNavigation()
+  const [userCredential, setuserCredential] = useState([]);
+  const [userFoodDetail, setuserFoodeDetail] = useState({ showReqDetail: ReqDetail });
+  const navigation = useNavigation()
 
   const [loading, setLoading] = useState(false);
 
@@ -31,15 +32,15 @@ export default function RestoHistory() {
     }, 800);
   };
   console.log("Main Resto Function ")
-  
+
   axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
 
-  const getReqData = async () => {
+  const getReqData = async (usrCredential) => {
     const Url = `/getfood`;
     try {
-      const uId = userCredential._id;
-      const bd = { userId: uId, showOth: showOther }
-      console.log("cred",userCredential._id);
+      const uId = usrCredential._id;
+      const bd = { userId: uId, role: "OTH",status:showTab.status }
+      console.log("cred", userCredential._id);
       return await axios.post(Url, bd)
         .then((res) => {
           if (res.status == 200) {
@@ -54,35 +55,31 @@ export default function RestoHistory() {
     }
   }
 
-  const getData = async ()=>{
-    try{
+  const getData = async () => {
+    try {
       await AsyncStorage.getItem("UserLoginCredentials")
-      .then(value =>{
-        if(value != null){
-          var datavalue = JSON.parse(value);
-          setuserCredential(datavalue);
-          console.log("Credential",value)
-        }
-      })
-    }catch(err){
+        .then(value => {
+          if (value != null) {
+            var datavalue = JSON.parse(value);
+            setuserCredential(datavalue);
+            getReqData(datavalue);
+            console.log("Credential", value)
+          }
+        })
+    } catch (err) {
       console.log(err);
     }
   }
   useEffect(() => {
     getData();
-    getReqData();
+    getReqData(userCredential);
     startLoading();
-  }, [])
+  }, [showTab])
 
 
   return (
     <View style={styles.container}>
-      <View style={[styles.butCont, styles.shadow,]}>
-        <TouchableOpacity style={{ width: "50%" }} onPress={() => { setShowOther(true) }}><Text style={[styles.btn, showOther ? { borderBottomColor: "white", color: "royalblue", fontWeight: "500", backgroundColor: "white", borderTopRightRadius: 12} : {}]}>Other NGO's</Text></TouchableOpacity>
-        <TouchableOpacity style={{ width: "50%" }} onPress={() => { setShowOther(false) }}><Text style={[styles.btn, showOther ? {} : { borderBottomColor: "white", color: "royalblue", fontWeight: "500", backgroundColor: "white", borderTopLeftRadius: 12 }]}>My Request</Text></TouchableOpacity>
 
-
-      </View>
       <View style={styles.stsbutCont}>
         <TouchableOpacity style={{ width: 105 }} onPressIn={() => { setStatus(0) }}><Text style={[styles.statusBtn, { borderColor: "#2eb82e", color: "#2eb82e" }, status == 0 ? { color: "white", backgroundColor: "#009933", borderRadius: 5 } : {}]}>
           <FontAwesomeIcon size={13} icon={faCheckCircle} color={status == 0 ? "white" : "#2eb82e"}></FontAwesomeIcon>  APPROVE</Text></TouchableOpacity>
@@ -95,54 +92,74 @@ export default function RestoHistory() {
 
       </View>
 
-      {
-        filter && <View style={styles.filtercontainer}>
-          <View style={[styles.filterBox, styles.shadow]}>
-            <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon={faRefresh}></FontAwesomeIcon> Recent</Text></TouchableOpacity>
-            <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon={faCalendar}></FontAwesomeIcon> Date</Text></TouchableOpacity>
-            <TouchableOpacity><Text style={styles.filterBtn}><FontAwesomeIcon icon={faLocationPin}></FontAwesomeIcon> Location</Text></TouchableOpacity>
-
-          </View>
-
-        </View>
-      }
       {loading ? (
-              <View style={{flexGrow:1,fontSize:30,justifyContent:"center",alignItems:"center"}}>
+        <View style={{ flexGrow: 1, fontSize: 30, justifyContent: "center", alignItems: "center" }}>
 
           <ActivityIndicator
             visible={loading}
-            size = {50}
+            size={50}
             textContent={'Loading...'}
             textStyle={styles.spinnerTextStyle}
           />
-          </View>
-        ) :
-      (reqfoodData.length >0 ? (
-      <ScrollView style={styles.requestCont}>
-        {
+        </View>
+      ) :
+        (reqfoodData.length > 0 ? (
+          <ScrollView style={styles.requestCont}>
+            {
           reqfoodData.map((data) => {
-          return (<TouchableOpacity onPress={() => { navigation.navigate("CheckInfo",{params:data})}} style={[styles.reqBox, styles.shadow]} key={data._id} >
+          return (<TouchableOpacity onPress={() => { navigation.navigate("CheckInfo",{params:data})}} style={[styles.reqBox, styles.shadow,data.Status == "Accept" && {borderColor:"lightgreen",backgroundColor: "#39ac73"}]} key={data._id} >
+                    <View style = {styles.label}>
+                    <ImageBackground source={Ribbion} style={styles.Ribbionimage}>
+                      <Text style ={{color:"white",fontWeight:'600',transform:[{rotateZ:"45deg"},{translateX:5},{translateY:-13}]}} >{data.Role}</Text>
+                    </ImageBackground>
+                    </View>
               <View style={styles.box1}>
-                <Text style={styles.reqId}>RequestId: {data.UserId}</Text>
-                <Text style={styles.reqDetail}><Text style={{ color: "royalblue", fontWeight: "700" }}>Name: </Text>{data.Name}</Text>
-                <Text style={styles.reqDetail}><Text style={{ color: "royalblue", fontWeight: "700" }}>FeedCount: </Text> {data.Feedcount}</Text>
-                <Text style={styles.reqDetail}><Text style={{ color: "royalblue", fontWeight: "700" }}>City: </Text> {data.City}</Text>
+                <Text style={styles.reqId}>RequestId: {data._id}</Text>
+                <Text style={styles.reqDetail}><Text style={{ color:data.Status == "Pending"?'tomato':"lightgreen", fontWeight: "700" }}><FontAwesomeIcon color='#e6f2ff' size={11} icon = {faUserAlt}></FontAwesomeIcon> Name : </Text>{data.Name}</Text>
+                <Text style={styles.reqDetail}><Text style={{ color: data.Status == "Pending"?'tomato':"lightgreen", fontWeight: "700" }}><FontAwesomeIcon color='#e6f2ff' size={11} icon = {faListNumeric}></FontAwesomeIcon> FeedCount : </Text> {data.Feedcount}</Text>
+                <Text style={styles.reqDetail}><Text style={{ color: data.Status == "Pending"?'tomato':"lightgreen", fontWeight: "700" }}><FontAwesomeIcon color='#e6f2ff' size={11} icon = {faCity}></FontAwesomeIcon> City : </Text> {data.City}</Text>
               </View>
               <View style={styles.box2}>
-                <TouchableOpacity><Text style={[styles.reqStateBtn, { color: data.Status == "Pending" ? "red" : "green" }]}>{data.Status}</Text></TouchableOpacity>
-                <Text style={styles.date}>{data.Date}  {data.Time}</Text>
+                {/* <TouchableOpacity><Text style={[styles.reqStateBtn, { color: data.Status == "Pending" ? "red" : "green" }]}>{data.Status}</Text></TouchableOpacity> */}
+                <Text style={[styles.date,data.Status == "Accept" && {color:"lightgreen"}]}><FontAwesomeIcon color={data.Status == "Pending"?'tomato':"white"} size={10} icon = {faCalendarAlt}></FontAwesomeIcon> {data.Date}  <FontAwesomeIcon color={data.Status == "Pending"?'tomato':"white"} size={10} icon = {faStopwatch}></FontAwesomeIcon>{data.Time}</Text>
               </View>
             </TouchableOpacity>
           )
         })
         }
-      </ScrollView>):
-      <View style={{flexGrow:1,fontSize:30,justifyContent:"center",alignItems:"center"}}>
-          <FontAwesomeIcon color = "#ffcc00" size = {50} icon = {faFaceGrin}></FontAwesomeIcon>
-        <Text style={{fontSize:30,color:"slateblue" ,flexDirection:"row"}}> No request Yet !!!</Text>
-        </View>)
-        }
-      <TouchableOpacity style={styles.foodReqBtnCont} onPress={() => {navigation.navigate("RestoHome") }}><FontAwesomeIcon style={styles.ReqBtn} size={30} color="white" icon={faArrowLeftLong}></FontAwesomeIcon></TouchableOpacity>
+          </ScrollView>) :
+          <View style={{ flexGrow: 1, fontSize: 30, justifyContent: "center", alignItems: "center" }}>
+            <FontAwesomeIcon color="#ffcc00" size={50} icon={faFaceGrin}></FontAwesomeIcon>
+            <Text style={{ fontSize: 30, color: "slateblue", flexDirection: "row" }}> No request Yet !!!</Text>
+          </View>)
+      }
+
+
+      <View style={[styles.butCont, styles.shadow,]}>
+        <TouchableOpacity style = {{width:65}}  onPress={() => { setShowTab({status:"Pending",current :0}) }}>
+          <Text style={[styles.btn,showTab.current == 0 && styles.btnActive]}>
+            <FontAwesomeIcon color={showTab.current == 0?"white":"tomato"} size={25} icon={faList}></FontAwesomeIcon>
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style = {{width:65}}  onPress={() => {setShowTab({status:"Accept",current :1}) }}>
+          <Text style={[styles.btn,showTab.current == 1 && styles.btnActive]}>
+            <FontAwesomeIcon color={showTab.current == 1?"white":"tomato"} size={28} icon={faCheckCircle}></FontAwesomeIcon>
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style = {{width:65}}  onPress={() => {setShowTab({status:"Delivered",current :2}) }}>
+          <Text style={[styles.btn,showTab.current == 2 && styles.btnActive]}>
+            <FontAwesomeIcon color={showTab.current == 2?"white":"tomato"} size={25} icon={faHistory}></FontAwesomeIcon>
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style = {{width:65}}  onPress={() => { navigation.navigate("RestoHome") }}>
+          <Text style={[styles.btn,showTab.current == 3 && styles.btnActive]}>
+            <FontAwesomeIcon color={showTab.current == 3?"white":"tomato"} size={25} icon={faArrowLeftLong}></FontAwesomeIcon>
+          </Text>
+        </TouchableOpacity>
+
+        {/* <TouchableOpacity  onPress={() => { setShowOther(false) }}><Text style={[styles.btn, showTab.current === 1 ? { borderBottomColor: "white", color: "royalblue", fontWeight: "500", backgroundColor: "white", borderTopLeftRadius: 12 } : {}]}>My Request</Text></TouchableOpacity> */}
+
+      </View>
 
     </View>
   );
@@ -150,12 +167,12 @@ export default function RestoHistory() {
 
 const styles = StyleSheet.create({
   spinnerTextStyle: {
-    flex:1,
-    justifyContent:"center",
+    flex: 1,
+    justifyContent: "center",
     color: 'royalblue',
   },
   container: {
-    flex:1,
+    flex: 1,
     width: "100%",
     backgroundColor: "white",
     alignItems: "center",
@@ -189,8 +206,27 @@ const styles = StyleSheet.create({
   butCont: {
     width: "100%",
     flexDirection: "row",
-    backgroundColor: "#2374D3",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "white",
+    justifyContent:"space-between",
+    paddingHorizontal:20,
+    paddingTop:5,
+    borderTopColor:"tomato",
+    borderTopWidth:2,
+    paddingBottom:10,
 
+
+  },
+  btnActive:{
+      fontWeight: "500",
+       backgroundColor: "tomato",
+       top:-30,
+       margin:2,
+       borderColor:"white",
+       borderWidth:2
+  
   },
   stsbutCont: {
     width: "100%",
@@ -212,16 +248,29 @@ const styles = StyleSheet.create({
     elevation: 5,
 
   },
+  Ribbionimage:{
+    flexGrow:1,
+    justifyContent:"center",
+    alignItems:"center",
+  },
+  label:{
+    position:"absolute",
+    // backgroundColor:"white",
+    top:-13,
+    right:-8,
+    width:70,
+    height:70,
+    zIndex:50,
+
+  },
   btn: {
-    paddingVertical: 10,
+    paddingVertical: 16,
     textAlign: "center",
-    paddingHorizontal: 10,
+    paddingHorizontal: 12,
     fontSize: 18,
-    color: "white",
-    borderBottomColor: "#2374D3",
-    borderBottomWidth: 3,
-    borderColor: "white",
-    backgroundColor: "#2374D3",
+    color: "tomato",
+    backgroundColor: "white",
+    borderRadius:60,
   },
   statusBtn: {
     fontSize: 13,
@@ -272,6 +321,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   reqBox: {
+    position:"relative",
     alignSelf: "center",
     marginBottom: 10,
     paddingVertical: 15,
@@ -280,7 +330,10 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: "lightblue",
+    borderColor:"tomato",
+    borderWidth:2,
+    backgroundColor: "#ff9999",
+    marginTop:3,
   },
   reqId: {
     color: "gray",
@@ -291,6 +344,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#220",
     paddingVertical: 5,
+    color:"white",
   },
   box2: {
     flexDirection: "column",

@@ -20,7 +20,10 @@ function Login({ navigation }) {
     const contextCall = useContext(CredentialContext);
 
 
-    axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+    // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+    axios.defaults.baseURL = `http://192.168.31.203:8000`;
+
+    
     const Url = `/login`;
     const HandleLogin = async () => {
         if (userdetail.email == "" || userdetail.password == "") {
@@ -38,7 +41,6 @@ function Login({ navigation }) {
                         .then((response) => {
                             const data = response.data;
                             if (response.status == 200) {
-                                console.log(data);
                                 persistLogin(data);
                             } else {
                                 seterrormsg(response.data.err);

@@ -40,7 +40,7 @@ const FoodReqRaise = ({ navigation }) => {
      || JSON.parse(userCredential).role =="" || feedcount =="" ||prefVehicle =="" || foodDetail.city == ""
       || foodDetail.contact == "" ||Address == "" ||location == null 
       ) {
-
+        
       console.log(foodDetail.type,JSON.parse(userCredential).name,JSON.parse(userCredential)._id , JSON.parse(userCredential).role ,feedcount,
       prefVehicle,foodDetail.city, foodDetail.contact,Address,location
       );
