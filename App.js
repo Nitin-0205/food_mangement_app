@@ -48,6 +48,7 @@ useEffect(()=>{
   // const UserContext = createContext();
 
   return (
+    
     <CredentialContext.Provider value={{storedCredential,setstoredCredential}}>
     <NavigationContainer>
       <View style={styles.container}>   

@@ -69,8 +69,8 @@ function Signup() {
 
   //   })
   // }
-  // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
-  axios.defaults.baseURL = `http://192.168.31.203:8000/`;
+  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+  // axios.defaults.baseURL = `http://192.168.31.203:8000/`;
 
 
   useEffect(() => {
@@ -213,16 +213,6 @@ function Signup() {
           />
         </View>
 
-        <View>
-          <Text style={styles.fieldLabel} >Contact</Text>
-          <TextInput keyboardType='phone-pad' style={styles.fields} placeholder="" value={detail.contact} onChangeText={(txt) => { if (detail.contact.length < 10) { setDetail({ ...detail, contact: txt }) } }}></TextInput>
-
-        </View>
-        
-        
-
-
-
         <View style={styles.dropcontainer}>
           {renderLabel("City")}
           <Dropdown
@@ -250,6 +240,13 @@ function Signup() {
             )}
           />
         </View>
+        <View>
+          <Text style={styles.fieldLabel} >Contact</Text>
+          <TextInput keyboardType='phone-pad' style={styles.fields} placeholder="" value={detail.contact} onChangeText={(txt) => { if (detail.contact.length < 10) { setDetail({ ...detail, contact: txt }) } }}></TextInput>
+
+        </View>
+        
+        
 
         <View style={{ width: "80%" }}>
 

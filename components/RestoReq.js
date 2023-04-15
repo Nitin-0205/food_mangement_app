@@ -38,7 +38,9 @@ const RestoReq = () => {
   const [donatTypOpt, setdonatTypOpt] = useState({ type: ["People", "Animal", "Agriculture"], icon: [faPeopleGroup, faShieldDog, faWheatAlt], checked: 0 })
 
 
-  axios.defaults.baseURL = `http://192.168.31.203:8000`;
+  // axios.defaults.baseURL = `http://192.168.31.203:8000`;
+  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+
 
   const HandlePress = async () => {
     console.log("Hello" ,JSON.parse(userCredential).name)
@@ -92,7 +94,7 @@ const RestoReq = () => {
 
 
   const getCityName = async () => {
-    axios.get(`http://192.168.31.203:8000/City`)
+    axios.get(`/City`)
       .then((response) => {
         setCityDetails(response.data)
       })

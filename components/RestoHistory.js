@@ -80,7 +80,7 @@ export default function RestoHistory() {
   return (
     <View style={styles.container}>
 
-      <View style={styles.stsbutCont}>
+      {/* <View style={styles.stsbutCont}>
         <TouchableOpacity style={{ width: 105 }} onPressIn={() => { setStatus(0) }}><Text style={[styles.statusBtn, { borderColor: "#2eb82e", color: "#2eb82e" }, status == 0 ? { color: "white", backgroundColor: "#009933", borderRadius: 5 } : {}]}>
           <FontAwesomeIcon size={13} icon={faCheckCircle} color={status == 0 ? "white" : "#2eb82e"}></FontAwesomeIcon>  APPROVE</Text></TouchableOpacity>
 
@@ -90,7 +90,7 @@ export default function RestoHistory() {
         <TouchableOpacity style={{ width: 105 }} onPressIn={() => { setStatus(2) }}><Text style={[styles.statusBtn, { color: "royalblue", borderColor: "royalblue" }, status == 2 ? { color: "white", backgroundColor: "royalblue", borderRadius: 5 } : {}]}>
           <FontAwesomeIcon size={13} icon={faCheckCircle} color={status == 2 ? "white" : "royalblue"}></FontAwesomeIcon>  DELIVERED</Text></TouchableOpacity>
 
-      </View>
+      </View> */}
 
       {loading ? (
         <View style={{ flexGrow: 1, fontSize: 30, justifyContent: "center", alignItems: "center" }}>
@@ -107,6 +107,7 @@ export default function RestoHistory() {
           <ScrollView style={styles.requestCont}>
             {
           reqfoodData.map((data) => {
+            console.log(data)
           return (<TouchableOpacity onPress={() => { navigation.navigate("CheckInfo",{params:data})}} style={[styles.reqBox, styles.shadow,data.Status == "Accept" && {borderColor:"lightgreen",backgroundColor: "#39ac73"}]} key={data._id} >
                     <View style = {styles.label}>
                     <ImageBackground source={Ribbion} style={styles.Ribbionimage}>
@@ -336,7 +337,7 @@ const styles = StyleSheet.create({
     marginTop:3,
   },
   reqId: {
-    color: "gray",
+    color: "lightgray",
     fontSize: 10,
     paddingLeft: 5,
   },

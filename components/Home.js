@@ -33,10 +33,10 @@ export default function Home() {
       setLoading(false);
     }, 500);
   };  
-  // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
 
   const getReqData = async (usrCredential) => {
-    const Url = "http://192.168.31.80:8000/getfood";
+    const Url = "/getfood";
     try {
       const uId = usrCredential._id;
       const bd = { userId: uId, showOth: showOther ,role:"NGO",status:ReqType}

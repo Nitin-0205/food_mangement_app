@@ -30,11 +30,11 @@ const Home2 = () => {
     }, 500);
   };  
 
-  // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
 
   const getReqData = async (usrCredential) => {
     // const Url = `/getfood`;
-    const Url = "http://192.168.31.80:8000/getfood";
+    const Url = "/getfood";
 
     try {
       const uId = usrCredential._id;
@@ -114,6 +114,7 @@ const Home2 = () => {
       <ScrollView style={styles.requestCont}>
         {
           reqfoodData.map((data) => {
+
           return (<TouchableOpacity onPress={() => { navigation.navigate("CheckInfo",{params:data})}} style={[styles.reqBox, styles.shadow,data.Status == "Accept" && {borderColor:"lightgreen",backgroundColor: "#39ac73"}]} key={data._id} >
           <View style = {styles.label}>
           <ImageBackground source={Ribbion} style={styles.Ribbionimage}>
@@ -128,7 +129,11 @@ const Home2 = () => {
     </View>
     <View style={styles.box2}>
       {/* <TouchableOpacity><Text style={[styles.reqStateBtn, { color: data.Status == "Pending" ? "red" : "green" }]}>{data.Status}</Text></TouchableOpacity> */}
-      <Text style={[styles.date,data.Status == "Accept" && {color:"lightgreen"}]}><FontAwesomeIcon color={data.Status == "Pending"?'#0088cc':"white"} size={10} icon = {faCalendarAlt}></FontAwesomeIcon> {data.Date}  <FontAwesomeIcon color={data.Status == "Pending"?'#0088cc':"white"} size={10} icon = {faStopwatch}></FontAwesomeIcon>{data.Time}</Text>
+      <Text style={[styles.date,data.Status == "Accept" && {color:"lightgreen"}]}>
+        <FontAwesomeIcon color={data.Status == "Pending"?'#0088cc':"white"} size={10} icon = {faCalendarAlt}></FontAwesomeIcon> {data.Date}  </Text>
+        <Text style={[styles.date,data.Status == "Accept" && {color:"lightgreen"}]}>
+        <FontAwesomeIcon color={data.Status == "Pending"?'#0088cc':"white"} size={10} icon = {faStopwatch}></FontAwesomeIcon>{data.Time}
+        </Text>
     </View>
   </TouchableOpacity>
           )

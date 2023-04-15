@@ -12,6 +12,9 @@ import MapViewDirections from 'react-native-maps-directions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete"
 
+
+const GOOGLE_API_KEY = "AIzaSyBPsF9meOyA8d6GtpMR6TTvF4hPaetULUs";
+
 const FoodReqRaise = ({ navigation }) => {
 
   const [foodDetail, setfoodDetail] = useState({contact:""});
@@ -32,7 +35,7 @@ const FoodReqRaise = ({ navigation }) => {
   const [vehicleOpt, setVehicleOpt] = useState({ type: ["Two Wheeler", "Car", "Van", "Truck"], icon: [faMotorcycle, faCarSide, faVanShuttle, faTruck], checked: 0 })
   const [donatTypOpt, setdonatTypOpt] = useState({ type: ["People", "Animal", "Agriculture"], icon: [faPeopleGroup, faShieldDog, faWheatAlt], checked: 0 })
 
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+  axios.defaults.baseURL = `https://fwm-backend.onrender.com`
 
   const url = `/food`;
   const HandlePress = async () => {
@@ -40,7 +43,7 @@ const FoodReqRaise = ({ navigation }) => {
      || JSON.parse(userCredential).role =="" || feedcount =="" ||prefVehicle =="" || foodDetail.city == ""
       || foodDetail.contact == "" ||Address == "" ||location == null 
       ) {
-        
+
       console.log(foodDetail.type,JSON.parse(userCredential).name,JSON.parse(userCredential)._id , JSON.parse(userCredential).role ,feedcount,
       prefVehicle,foodDetail.city, foodDetail.contact,Address,location
       );
@@ -138,6 +141,42 @@ const FoodReqRaise = ({ navigation }) => {
   AsyncStorage.getItem("UserLoginCredentials").then((result) => { setuserCredential(result) }).catch((err) => { console.log(err) })
   return (
     <View style={styles.container}>
+      <View style={{ marginTop:20,height:70, width: "86%",alignSelf:"center",position:"relative", zIndex: 100 ,backgroundColor:"red"}}>
+        <Text style={[styles.subConTitle,{zIndex:20}]}>Address</Text>
+
+        <GooglePlacesAutocomplete
+          placeholder="Address"
+          // currentLocation={true}
+          onChangeText ={result=>{console.log("sadfdas",result)}}
+          enablePoweredByContainer ={false}
+          fetchDetails={true}
+          query={{
+            key: GOOGLE_API_KEY,
+            language: 'en',
+            components: "country:in",
+
+          }}
+          onPress={(data, details = null) => {
+            setAddress(details);
+          }}
+          textInputProps={{
+            leftIcon: { type: 'font-awesome', name: 'chevron-left' },
+            errorStyle: { color: 'red' },
+          }}
+          styles={{
+            container: {flex: 0, position: "absolute", left: 0, right: 0, top: 15, zIndex: 10, paddingTop:5,paddingHorizontal:5,borderColor:"lightgray",borderWidth:1,borderRadius:5},
+            textInput: {
+              paddingVertical:5,
+              color: '#9900ff',
+              borderColor:"lightgray",
+              borderWidth:1,
+              fontSize: 17,
+            },
+            
+          }
+          }
+        />
+      </View>
       <ScrollView style={styles.Scrollcontainer}>
 
         <View style={styles.subContainer}>
@@ -206,7 +245,7 @@ const FoodReqRaise = ({ navigation }) => {
           />
           <View style={[styles.subContainer,{marginTop:20}]}>
             <Text style={styles.subConTitle}>Mobile</Text>
-            <View style={[styles.subConBox, { paddingVertical: 10, alignItems: "center", justifyContent: "center" }]}>
+            <View style={ { paddingVertical: 10, alignItems: "center", justifyContent: "center"}}>
               <View style = {{width:"100%",paddingHorizontal:5,flexDirection: 'row',backgroundColor: "#ffe6ff",borderRadius:3}}>
               <Text style = {{textAlignVertical:"center",marginLeft:6,marginRight:8}}><FontAwesomeIcon size={14}  color="#8585e0" icon = {faPhone}></FontAwesomeIcon></Text>
               <TextInput inputMode="numeric" style={{ width: "80%", marginRight: 5, backgroundColor: "#ffe6ff",  pasddingHorizontal: 10, borderRadius: 3, color: "#9900ff", fontSize: 20, paddingVertical: 5 }} keyboardType='phone-pad' value={foodDetail.contact} onChangeText={(cnt) => { setfoodDetail({ ...foodDetail, contact: cnt }) }} ></TextInput>

@@ -1,4 +1,4 @@
-import { faBuildingNgo, faHotel, faLocationCrosshairs, faUserAlt } from '@fortawesome/free-solid-svg-icons';
+import { faBuildingNgo, faClock, faDirections, faFlag, faHotel, faLocationCrosshairs, faMapMarkerAlt, faUserAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import React, { useEffect, useState, useRef } from 'react';
 import { Dimensions, StyleSheet, Text, View } from "react-native"
@@ -21,11 +21,11 @@ const Map = ({ route }) => {
 	const mapRef = useRef();
 	const [dropLocation, setdropLocation] = useState({
 		latitude: 19.443,
-		longitude: 72.936,
+		longitude: 73.936,
 	});
 	const [pickUpLocation, setpickUpLocation] = useState({
-		latitude: 19.110882808284902,
-		longitude: 72.810673,
+		latitude: 19.443,
+		longitude: 73.936,
 		latitudeDelta: 0.0922,
 		longitudeDelta: 0.0421,
 	});
@@ -33,13 +33,13 @@ const Map = ({ route }) => {
 	const geoCodeLocation = async (locate) => {
 		// let geoCodeAdd = await Location.geocodeAsync(`${locate.address}`);
 		setdropLocation({latitude:locate.address.geometry.location.lat,longitude:locate.address.geometry.location.lng})
-		// console.log(locate.address.geometry.location)
+		console.log(locate.address.geometry.location)
 	}
 
 	const getPicklocate = () => {
 		const mapCordinates = route?.params?.params;
-		console.log(mapCordinates);
-		setpickUpLocation(mapCordinates.coords);
+		console.log("param",mapCordinates);
+		// setpickUpLocation(mapCordinates.coords);
 	};
 	const getData = async () => {
 		try {
@@ -68,7 +68,7 @@ const Map = ({ route }) => {
 
 		console.log("Longitude", location?.coords?.longitude)
 		console.log("Latitude", location?.coords?.latitude)
-		setdropLocation(location?.coords)
+		// setdropLocation(location?.coords)
 
 	}
 
@@ -80,7 +80,7 @@ const Map = ({ route }) => {
 	//   }
 
 	useEffect(() => {
-		getLocationPermission();
+		// getLocationPermission();
 		getPicklocate();
 		getData();
 		// getLocationPermission();
@@ -147,6 +147,7 @@ const Map = ({ route }) => {
 					strokeColor="red"
 					optimizeWaypoints={true}
 					onReady={(result) => {
+						// console.log(result)
 						setMapDisTime({
 							...mapDistTime,
 							distance: result.distance.toString(),
@@ -155,7 +156,7 @@ const Map = ({ route }) => {
 							dropAddress: result.legs[0].start_address,
 						});
 
-						console.log(result.legs[0].end_address);
+						console.log(result.legs[0]);
 						mapRef.current.fitToCoordinates(result.coordinates, {
 							edgePadding: {
 								right: 30,

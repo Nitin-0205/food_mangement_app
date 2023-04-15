@@ -12,7 +12,7 @@ export default function CheckInfo({route}) {
     const navigation = useNavigation();
 
     const foodInfoDetail = route?.params?.params;
-    // console.log(foodInfoDetail)
+    console.log("detao",foodInfoDetail.Address)
     return (
         <View style = {styles.container}>
             <View style = {{flex:1,zIndex:2,position:"absolute",left:0,right:0,top:0,bottom:0,opacity:0.5,backgroundColor:"black"}}>
@@ -51,7 +51,7 @@ export default function CheckInfo({route}) {
 
                     <ScrollView  style={styles.InfotxtContainer}>
                         <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Name</Text>      :{foodInfoDetail?.Name}</Text>
-                        <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Address</Text>   : {foodInfoDetail?.Address}</Text>
+                        {/* <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Address</Text>   : {foodInfoDetail?.Address}</Text> */}
                         <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>City</Text>      : {foodInfoDetail?.City}</Text>
                         <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Type</Text>      : {foodInfoDetail?.Type}</Text>
                         <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Vehicle</Text>   : {foodInfoDetail?.Vehicle}</Text>
