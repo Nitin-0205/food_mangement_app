@@ -2,8 +2,9 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Animated }
 import React, { useState, useEffect, useRef } from 'react'
 import newEmp from "../assets/newEmp.png";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBars, faFaceGrin, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faFaceGrin, faXmark,faUser } from '@fortawesome/free-solid-svg-icons';
 import { useNavigation } from '@react-navigation/native';
+import Emp from "../assets/emp.gif"
 import axios from 'axios';
 import Navbar from './Navbar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,8 +20,8 @@ export default function Employee() {
   const [employeeInfo ,setEmpInfo] =useState([]);
   const [showEmpnfo ,setshowEmpnfo] =useState(false);
 
-  axios.defaults.baseURL = `http://192.168.31.80:8000`;
-  // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+  // axios.defaults.baseURL = `http://192.168.31.80:8000`;
+  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
   const getEmployeeDetail = async (usrCredential) => {
     const url = `/Employees`;
     try {
@@ -57,7 +58,6 @@ export default function Employee() {
       console.log(err);
     }
   }
-
   const startLoading = () => {
     setLoading(true);
     setTimeout(() => {
@@ -80,16 +80,28 @@ export default function Employee() {
     <View style={styles.container}>
       {loading ? (
               <Loading loading = {loading}></Loading>
-        ):(empDetail.length > 0 ?<ScrollView style={styles.detailContainer}>
+        ):(empDetail.length > 0 ? <ScrollView style={styles.detailContainer}>
+            
         {
           empDetail.map((emp) => {
-            return <TouchableOpacity style={styles.EmpBox} key={emp.Contact} onPress = {()=>{console.log(emp)}}>
-              <Text><Text style={{ color: "gray" }}>Employee ID: {emp.EmpId}</Text></Text>
-              <Text><Text style={{ color: "black", fontSize: 18, marginVertical: 10 }}>Name: {emp.Name}</Text></Text>
-              <Text><Text style={{ color: "black", fontSize: 18, marginVertical: 10 }}>Contact: {emp.Contact}</Text></Text>
+            return (
+            <TouchableOpacity style={[styles.EmpBox,{ backgroundColor: emp.Status == "A" ? "#00b359" : "tomato",alignItems:"center"}]} key={emp.Contact} onPress = {()=>{console.log(emp)}}>
+              <View style={{width:80,height:80,marginRight:30,overflow:"hidden",borderRadius:50,borderColor:"white",borderWidth:3,justifyContent:"center",alignItems:"center",marginBottom:10}}>
+                {/* <FontAwesomeIcon color= "white" size = {50} icon = {faUser}> </FontAwesomeIcon> */}
+                <Image style = {{width:80,height:80}} source={Emp}></Image>
+              </View>
+              <View>
+              <Text style={{ color: "white", marginVertical: 1 }}><Text style ={{color:"lightgray"}}>Emp ID: </Text>{emp.EmpId}</Text>
+              <Text style={{ color: "white" ,fontWeight:"500", fontSize: 18, marginVertical: 1 }}><Text style={{ color: "lightgray" , fontSize: 14}}>Name: </Text>{emp.Name}</Text>
+              <Text style={{ color: "white" ,fontWeight:"500", fontSize: 18, marginVertical: 1 }}><Text style={{ color: "lightgray", fontSize: 14 }}>Contact: </Text>{emp.Contact}</Text>
+              <Text style={{ color: "white" ,fontWeight:"500", fontSize: 18, marginVertical: 1 }}><Text style={{ color: "lightgray",fontWeight:"600", fontSize: 15}}>Status: </Text>{emp.Status == "A" ?"Available":"Not Available"}</Text>
+
+              </View>
             </TouchableOpacity>
+            )
           })
         }
+        
       </ScrollView>:<View style={{flexGrow:1,fontSize:30,justifyContent:"center",alignItems:"center"}}>
           <FontAwesomeIcon color = "#ffcc00" size = {50} icon = {faFaceGrin}></FontAwesomeIcon>
         <Text style={{fontSize:30,color:"slateblue" ,flexDirection:"row"}}> No Employee Yet !!!</Text>
@@ -99,6 +111,7 @@ export default function Employee() {
     </View >
   )
 }
+
 const styles = StyleSheet.create({
   container: {
     width: "100%",
@@ -137,17 +150,21 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     width: "100%",
     padding: 10,
+    flex:1,
+    // flexDirection:"row",
+    // flexWrap:"wrap",
   },
   EmpBox: {
-    width: "98%",
+    width: "100%",
     marginTop:5,
-    alignSelf: "center",
+    minWidth:170,
     paddingHorizontal: 20,
     paddingVertical: 20,
     backgroundColor: "azure",
     borderBottomColor: "lightgray",
     borderBottomWidth: 3,
     borderRadius: 5,
+    flexDirection:"row"
   },
   addEmpCont: {
     width: 60,
@@ -166,4 +183,3 @@ const styles = StyleSheet.create({
     height: "100%",
   }
 })
-

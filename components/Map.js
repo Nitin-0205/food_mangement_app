@@ -38,9 +38,10 @@ const Map = ({ route }) => {
 
 	const getPicklocate = () => {
 		const mapCordinates = route?.params?.params;
-		console.log("param",mapCordinates);
-		// setpickUpLocation(mapCordinates.coords);
+		console.log("param",mapCordinates.coords);
+		setpickUpLocation(mapCordinates.coords);
 	};
+
 	const getData = async () => {
 		try {
 			await AsyncStorage.getItem("UserLoginCredentials")
@@ -147,7 +148,7 @@ const Map = ({ route }) => {
 					strokeColor="red"
 					optimizeWaypoints={true}
 					onReady={(result) => {
-						// console.log(result)
+						console.log(result)
 						setMapDisTime({
 							...mapDistTime,
 							distance: result.distance.toString(),
@@ -204,7 +205,7 @@ const Map = ({ route }) => {
 						icon={faBuildingNgo}
 					></FontAwesomeIcon>
 				</Marker>
-				{/* <Circle center={dropLocation} radius={1000} /> */}
+				{/* <Circle center={dropLocation} radius={1000} /> */} 
 			</MapView>
 			<View
 				style={{

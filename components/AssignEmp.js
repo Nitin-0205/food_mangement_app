@@ -2,28 +2,36 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Animated }
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import newEmp from "../assets/newEmp.png";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faArrowLeftLong, faBars, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faFaceGrin, faXmark,faUser } from '@fortawesome/free-solid-svg-icons';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Navbar from './Navbar';
 import { useNavigation } from '@react-navigation/native';
+import Emp from "../assets/emp.gif"
+import Loading from './Loading';
 
 
-const AssignEmp = ({route}) => {
+export default function({route}){
   const [empDetail, setEmpdetail] = useState([]);
   const [userCredential, setuserCredential] = useState({});
   const [errmsg, seterrmsg] = useState([]);
   const navigation = useNavigation()
+  const [loading, setLoading] = useState(false);
 
   const foodInfoDetail = route?.params?.params;
 
   console.log(foodInfoDetail);
 
-  // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
-    axios.defaults.baseURL = `http://192.168.31.80:8000`;
+  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+    // axios.defaults.baseURL = `http://192.168.31.80:8000`;
 
-
+    const startLoading = () => {
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    };  
   const getEmployeeDetail = (usrCredential) => {
     const url = `/Employees`;
     try {
@@ -59,6 +67,7 @@ const AssignEmp = ({route}) => {
   useEffect(() => {
     getData()
     getEmployeeDetail(userCredential);
+    startLoading();
   },[])
 
   const HandlePress = (empDetail) => {
@@ -85,35 +94,46 @@ const AssignEmp = ({route}) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.detailContainer}>
+      {loading ? (
+              <Loading loading = {loading}></Loading>
+        ):(empDetail.length > 0 ? <ScrollView style={styles.detailContainer}>
+            
         {
           empDetail.map((emp) => {
             return (
-            <TouchableOpacity onPress={()=>{HandlePress(emp)}} disabled = {emp.Status == "A"?false:true}   style={[styles.EmpBox, { backgroundColor: emp.Status == "A" ? "#00b359" : "tomato" ,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}]} key={emp.Contact}>
-              <View>
-              <Text><Text style={{ color: "lightgray" }}>Employee ID: {emp.EmpId}</Text></Text>
-              <Text><Text style={{ color: "white", fontSize: 18, marginVertical: 10 }}>Name: {emp.Name}</Text></Text>
-              <Text><Text style={{ color: "white", fontSize: 15, marginVertical: 10 }}>Contact: {emp.Contact}</Text></Text>
+            <TouchableOpacity onPress ={()=>{HandlePress(emp)}} style={[styles.EmpBox,{ backgroundColor: emp.Status == "A" ? "#00b359" : "tomato",alignItems:"center"}]} key={emp.Contact} >
+              <View style={{width:80,height:80,marginRight:30,overflow:"hidden",borderRadius:50,borderColor:"white",borderWidth:3,justifyContent:"center",alignItems:"center",marginBottom:10}}>
+                {/* <FontAwesomeIcon color= "white" size = {50} icon = {faUser}> </FontAwesomeIcon> */}
+                <Image style = {{width:80,height:80}} source={Emp}></Image>
               </View>
               <View>
-                <Text style = {{fontSize:20,color:"azure",borderColor:"lightgray",borderWidth:1,padding:8}}>{emp.Status == "A"?"Available":"Not Available"}</Text>
+              <Text style={{ color: "white", marginVertical: 1 }}><Text style ={{color:"lightgray"}}>Emp ID: </Text>{emp.EmpId}</Text>
+              <Text style={{ color: "white" ,fontWeight:"500", fontSize: 18, marginVertical: 1 }}><Text style={{ color: "lightgray" , fontSize: 14}}>Name: </Text>{emp.Name}</Text>
+              <Text style={{ color: "white" ,fontWeight:"500", fontSize: 18, marginVertical: 1 }}><Text style={{ color: "lightgray", fontSize: 14 }}>Contact: </Text>{emp.Contact}</Text>
+              <Text style={{ color: "white" ,fontWeight:"500", fontSize: 18, marginVertical: 1 }}><Text style={{ color: "lightgray",fontWeight:"600", fontSize: 15}}>Status: </Text>{emp.Status == "A" ?"Available":"Not Available"}</Text>
+
               </View>
             </TouchableOpacity>
             )
           })
         }
-      </ScrollView>
-      <TouchableOpacity style={styles.backCont} onPress={() => { navigation.navigate("AppIntegrated") }}><FontAwesomeIcon style={styles.backEmp} size={30} color="white" icon={faArrowLeftLong}></FontAwesomeIcon></TouchableOpacity>
-    </View>
+        
+      </ScrollView>:<View style={{flexGrow:1,fontSize:30,justifyContent:"center",alignItems:"center"}}>
+          <FontAwesomeIcon color = "#ffcc00" size = {50} icon = {faFaceGrin}></FontAwesomeIcon>
+        <Text style={{fontSize:30,color:"slateblue" ,flexDirection:"row"}}> No Employee Yet !!!</Text>
+        </View>)
+      }
+      <TouchableOpacity style={styles.addEmpCont} onPress={HandlePress}><Image source={newEmp} style={styles.addEmp}></Image></TouchableOpacity>
+    </View >
   )
 }
+
 const styles = StyleSheet.create({
   container: {
     width: "100%",
     flex: 1,
     backgroundColor: "white",
     alignItems: "center",
-    paddingTop: Constants.statusBarHeight,
 
   },
   Head: {
@@ -143,40 +163,40 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   detailContainer: {
+    marginTop:30,
     backgroundColor: "white",
     width: "100%",
     padding: 10,
+    flex:1,
+    // flexDirection:"row",
+    // flexWrap:"wrap",
   },
   EmpBox: {
-    width: "98%",
-    alignSelf: "center",
+    width: "100%",
+    marginTop:5,
+    minWidth:170,
     paddingHorizontal: 20,
     paddingVertical: 20,
-    backgroundColor: "tomato",
+    backgroundColor: "azure",
     borderBottomColor: "lightgray",
     borderBottomWidth: 3,
     borderRadius: 5,
-    marginVertical: 3,
+    flexDirection:"row"
   },
-  backCont: {
+  addEmpCont: {
     width: 60,
-    height: 50,
+    height: 60,
     position: "absolute",
     bottom: 20,
     right: 20,
-
-    justifyContent: "center",
-    alignItems: "center",
     backgroundColor: "royalblue",
-    borderRadius: 20,
+    borderRadius: 30,
     borderColor: "royalblue",
     borderWidth: 1,
     padding: 5,
   },
-  backEmp: {
+  addEmp: {
     width: "100%",
     height: "100%",
-  },
+  }
 })
-
-export default AssignEmp;

@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import RestoHome from './RestoHome';
 import RestoHistory from './RestoHistory';
 import RestoReq from './RestoReq';
-// import CheckInfo from './CheckInfo';
+import NGOS from './NGOS';
 
 import RestoMap from './RestoMap';
 import  {CredentialContext} from './CredentialContext'
@@ -35,7 +35,7 @@ export default function Resto() {
             <Tab.Screen name="RestoMap" component={RestoMap} options={{headerShown:false}}></Tab.Screen>
             <Tab.Screen name="RestoReq" component={RestoReq} options={{headerShown:false}}></Tab.Screen>
             <Tab.Screen name="RestoHistory" component={RestoHistory} options={{headerShown:false}}></Tab.Screen>
-            {/* <Tab.Screen name="CheckInfo" component={CheckInfo} options={{headerShown:false}}></Tab.Screen> */}
+            <Tab.Screen name="NGOS" component={NGOS} options={{headerShown:false}}></Tab.Screen>
 
           </Tab.Navigator>
     </SafeAreaView>

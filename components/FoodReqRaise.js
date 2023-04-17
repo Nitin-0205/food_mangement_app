@@ -158,6 +158,7 @@ const FoodReqRaise = ({ navigation }) => {
           }}
           onPress={(data, details = null) => {
             setAddress(details);
+            setLocation({latitude:details.geometry.location.lat,longitude:details.geometry.location.lng})
           }}
           textInputProps={{
             leftIcon: { type: 'font-awesome', name: 'chevron-left' },

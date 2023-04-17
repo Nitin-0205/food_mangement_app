@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Button, Image } from 'react-native';
 import Constants from 'expo-constants';
 import { useState } from 'react';
-import { faMapMarkedAlt, faMapMarker, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faMapMarkedAlt, faMapMarker,faUser, faPerson, faPersonBiking, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -12,11 +12,10 @@ export default function CheckInfo({route}) {
     const navigation = useNavigation();
 
     const foodInfoDetail = route?.params?.params;
-    console.log("detao",foodInfoDetail.Address)
+    console.log("detao",route?.params?.othShow)
     return (
         <View style = {styles.container}>
             <View style = {{flex:1,zIndex:2,position:"absolute",left:0,right:0,top:0,bottom:0,opacity:0.5,backgroundColor:"black"}}>
-
             </View>
             <LinearGradient 
             colors = {["#006699","#2597f4","#1ab2ff"]}
@@ -61,24 +60,42 @@ export default function CheckInfo({route}) {
                         <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Mobile</Text>    : {foodInfoDetail?.Contact}</Text>
 
                         {
-                           foodInfoDetail?.AssignVolunteer  && <>
-                            <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Employee Name</Text>  : {foodInfoDetail?.AssignVolunteer?.Name}</Text>
-                            <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Employee Phone</Text>  : {foodInfoDetail?.AssignVolunteer?.Contact}</Text>
-                            <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Employee Email</Text>  : {foodInfoDetail?.AssignVolunteer?.EmpId}</Text>
-
-                            </>
+                           foodInfoDetail?.AssignVolunteer  && <View style = {{alignItems:"flex-start",marginTop:15,backgroundColor:"lightgreen",paddingBottom:20,borderColor:1,borderRadius:5}}>
+                            <Text style = {{color:"slateblue",marginTop:10,fontSize:25,alignSelf:"center"}}><FontAwesomeIcon color = "tomato" size ={20} icon = {faUser}></FontAwesomeIcon> Volunteer Detail</Text>
+                            <Text style={[styles.options,{color:"gray"}]}><Text style = {{color:"green"}}>Name</Text>  : {foodInfoDetail?.AssignVolunteer?.Name}</Text>
+                            <Text style={[styles.options,{color:"gray"}]}><Text style = {{color:"green"}}>Phone</Text>  : {foodInfoDetail?.AssignVolunteer?.Contact}</Text>
+                            <Text style={[styles.options,{color:"gray"}]}><Text style = {{color:"green"}}>Email</Text>  : {foodInfoDetail?.AssignVolunteer?.EmpId}</Text>
+                            <View style = {{marginVertical:10,flexDirection:"row",alignSelf:"center",justifyContent:"center"}}>
+                            
+                                <TouchableOpacity onPress={()=>{navigation.navigate("AssignEmp",{params:foodInfoDetail})}} style = {{width:120,marginRight:10}}>
+                                    <LinearGradient
+                                    colors = {["#2196F3","#0a6fc2"]}
+                                    style={styles.InfoTxtbtn}>
+                                        <Text style={{fontSize: 20,fontWeight: 'bold',color: 'white'}}>Cancel</Text>
+                                    </LinearGradient>
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={()=>{navigation.navigate("AssignEmp",{params:foodInfoDetail})}} style = {{width:120,margin:0}}>
+                                    <LinearGradient
+                                    colors = {["#2196F3","#0a6fc2"]}
+                                    style={styles.InfoTxtbtn}>
+                                        <Text style={{fontSize: 20,fontWeight: 'bold',color: 'white'}}>Delivered</Text>
+                                    </LinearGradient>
+                                </TouchableOpacity>
+                                
+                            </View>
+                           </View>
                         }
 
                     </ScrollView>
                     {
-                       foodInfoDetail.Status == "Pending" && <TouchableOpacity onPress={()=>{navigation.navigate("AssignEmp",{params:foodInfoDetail})}} style = {styles.Infobtn}>
+                       foodInfoDetail.Status == "Pending"  && (<TouchableOpacity onPress={()=>{navigation.navigate("AssignEmp",{params:foodInfoDetail})}} style = {styles.Infobtn}>
                         <LinearGradient
                         colors = {["#2196F3","#0a6fc2"]}
                         style={styles.InfoTxtbtn}>
                         <Text style={{fontSize: 20,fontWeight: 'bold',color: 'white'}}>Accept Donation</Text>
 
                         </LinearGradient>
-                        </TouchableOpacity>
+                        </TouchableOpacity>)
                     }
 
                 </View>
