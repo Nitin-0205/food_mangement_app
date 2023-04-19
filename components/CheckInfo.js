@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Button, Image } from 'react-native';
 import Constants from 'expo-constants';
 import { useState } from 'react';
@@ -6,13 +6,65 @@ import { faMapMarkedAlt, faMapMarker,faUser, faPerson, faPersonBiking, faXmark }
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import axios from 'axios';
+import api from './url';
 
 export default function CheckInfo({route}) {
     const navigation = useNavigation();
+    const [othAccept ,setAcceptShow] = useState(false)
+    axios.defaults.baseURL = api.defaults.baseURL;
 
     const foodInfoDetail = route?.params?.params;
-    console.log("detao",route?.params?.othShow)
+    // console.log(foodInfoDetail?.Address?.formatted_address)
+    const AcceptSet = ()=>{
+        if(foodInfoDetail.Status == "Pending"){
+                if(route?.params?.othShow){
+                    setAcceptShow(true)
+                }else{
+                    setAcceptShow(false)
+                }
+        }
+    }
+
+    const CancelReq = () => {
+        const url = `/cancel`;
+        try {
+          axios.post(url, {foodReqId :foodInfoDetail._id })
+            .then((res) => {
+              if (res.status == 200) {
+                alert("Canceled Delivery !!!")
+                // navigation.navigate("AppIntegrated");
+              } else {
+                seterrmsg("HELLO",res.error);
+              }
+            })
+        } catch (error) {
+          console.log("Something Went Wrong ", error)
+        }
+        navigation.push("AppIntegrated")
+      }
+
+      const Delivered = () => {
+        const url = `/deliver`;
+        try {
+          axios.post(url, {foodReqId :foodInfoDetail._id })
+            .then((res) => {
+              if (res.status == 200) {
+                alert("Delivery Received!!!")
+                // navigation.navigate("AppIntegrated");
+              } else {
+                seterrmsg("HELLO",res.error);
+              }
+            })
+        } catch (error) {
+          console.log("Something Went Wrong ", error)
+        }
+        navigation.push("AppIntegrated")
+      }
+    useEffect(()=>{
+        AcceptSet()
+    },[])
+    
     return (
         <View style = {styles.container}>
             <View style = {{flex:1,zIndex:2,position:"absolute",left:0,right:0,top:0,bottom:0,opacity:0.5,backgroundColor:"black"}}>
@@ -31,7 +83,7 @@ export default function CheckInfo({route}) {
 
             </LinearGradient>
         
-            <TouchableOpacity  onPress = {()=>{navigation.navigate("AppIntegrated")}} style={{zIndex:100}}><FontAwesomeIcon style = {styles.closeTabBtn} color = "#e6f9ff"  size = {32} icon ={faXmark}></FontAwesomeIcon></TouchableOpacity>
+            <TouchableOpacity  onPress = {()=>{navigation.navigate("AppIntegrated")}} style={{width:40,height:40,position:"absolute",right:18,top:18,zIndex:1000}}><FontAwesomeIcon style = {styles.closeTabBtn} color = "#e6f9ff"  size = {32} icon ={faXmark}></FontAwesomeIcon></TouchableOpacity>
             
             <View style={[styles.Infocontainer,styles.shadow]}>
             <LinearGradient
@@ -50,7 +102,7 @@ export default function CheckInfo({route}) {
 
                     <ScrollView  style={styles.InfotxtContainer}>
                         <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Name</Text>      :{foodInfoDetail?.Name}</Text>
-                        {/* <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Address</Text>   : {foodInfoDetail?.Address}</Text> */}
+                        <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Address</Text>   : {foodInfoDetail?.Address?.formatted_address}</Text>
                         <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>City</Text>      : {foodInfoDetail?.City}</Text>
                         <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Type</Text>      : {foodInfoDetail?.Type}</Text>
                         <Text style={styles.options}><Text style = {{color:"#0a6fc2"}}>Vehicle</Text>   : {foodInfoDetail?.Vehicle}</Text>
@@ -65,16 +117,17 @@ export default function CheckInfo({route}) {
                             <Text style={[styles.options,{color:"gray"}]}><Text style = {{color:"green"}}>Name</Text>  : {foodInfoDetail?.AssignVolunteer?.Name}</Text>
                             <Text style={[styles.options,{color:"gray"}]}><Text style = {{color:"green"}}>Phone</Text>  : {foodInfoDetail?.AssignVolunteer?.Contact}</Text>
                             <Text style={[styles.options,{color:"gray"}]}><Text style = {{color:"green"}}>Email</Text>  : {foodInfoDetail?.AssignVolunteer?.EmpId}</Text>
-                            <View style = {{marginVertical:10,flexDirection:"row",alignSelf:"center",justifyContent:"center"}}>
+                            {
+                                !route?.params?.deliveryStatus && (<View style = {{marginVertical:10,flexDirection:"row",alignSelf:"center",justifyContent:"center"}}>
                             
-                                <TouchableOpacity onPress={()=>{navigation.navigate("AssignEmp",{params:foodInfoDetail})}} style = {{width:120,marginRight:10}}>
+                                <TouchableOpacity onPress={CancelReq} style = {{width:120,marginRight:10}}>
                                     <LinearGradient
                                     colors = {["#2196F3","#0a6fc2"]}
                                     style={styles.InfoTxtbtn}>
                                         <Text style={{fontSize: 20,fontWeight: 'bold',color: 'white'}}>Cancel</Text>
                                     </LinearGradient>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={()=>{navigation.navigate("AssignEmp",{params:foodInfoDetail})}} style = {{width:120,margin:0}}>
+                                <TouchableOpacity onPress={Delivered} style = {{width:120,margin:0}}>
                                     <LinearGradient
                                     colors = {["#2196F3","#0a6fc2"]}
                                     style={styles.InfoTxtbtn}>
@@ -82,20 +135,23 @@ export default function CheckInfo({route}) {
                                     </LinearGradient>
                                 </TouchableOpacity>
                                 
-                            </View>
+                            </View>)
+                            }
                            </View>
                         }
 
                     </ScrollView>
                     {
-                       foodInfoDetail.Status == "Pending"  && (<TouchableOpacity onPress={()=>{navigation.navigate("AssignEmp",{params:foodInfoDetail})}} style = {styles.Infobtn}>
+                       othAccept && (
+                        <TouchableOpacity onPress={()=>{navigation.navigate("AssignEmp",{params:foodInfoDetail})}} style = {styles.Infobtn}>
                         <LinearGradient
                         colors = {["#2196F3","#0a6fc2"]}
                         style={styles.InfoTxtbtn}>
                         <Text style={{fontSize: 20,fontWeight: 'bold',color: 'white'}}>Accept Donation</Text>
 
                         </LinearGradient>
-                        </TouchableOpacity>)
+                        </TouchableOpacity>
+                        )
                     }
 
                 </View>
@@ -115,8 +171,8 @@ const styles = StyleSheet.create({
     },
     closeTabBtn: {
         position: "absolute",
-        right: 15,
-        top: 15,
+        right: 0,
+        top: 0,
         width: 40,
         height: 40,
         zIndex: 10,
@@ -132,7 +188,8 @@ const styles = StyleSheet.create({
     Information: {
         borderWidth: 2,
         width: 350,
-        height: 600,
+        minHeight: 400,
+        maxHeight:650,
         borderColor: 'lightgray',
         flexDirection: 'column',
         // backgroundColor: '#35AF75',

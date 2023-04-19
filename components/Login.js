@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CredentialContext } from '../components/CredentialContext'
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-
+import api from "./url"
 
 function Login({ navigation }) {
     const [userdetail, setuserdetail] = useState({ email: "", password: "" });
@@ -19,9 +19,9 @@ function Login({ navigation }) {
 
     const contextCall = useContext(CredentialContext);
 
-
-    axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
-    // axios.defaults.baseURL = `http://192.168.31.203:8000`;
+    // axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+    axios.defaults.baseURL = api.defaults.baseURL;
+    // console.log(api.defaults.baseURL)
 
     
     const Url = `/login`;
@@ -42,6 +42,7 @@ function Login({ navigation }) {
                             const data = response.data;
                             if (response.status == 200) {
                                 persistLogin(data);
+                                console.log(response.data)
                             } else {
                                 seterrormsg(response.data.err);
                                 alert(errmsg);

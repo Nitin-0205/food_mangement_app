@@ -9,6 +9,7 @@ import { faBars, faBowlFood, faCalendarAlt, faCalendarDay, faCheckSquare, faCity
 import { faCalendar, faCheckCircle, faStickyNote } from '@fortawesome/free-regular-svg-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import api from "./url"
 
 const Home2 = () => {
   const [filter, setfilter] = useState(false);
@@ -30,7 +31,7 @@ const Home2 = () => {
     }, 500);
   };  
 
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+axios.defaults.baseURL = api.defaults.baseURL;
 
   const getReqData = async (usrCredential) => {
     // const Url = `/getfood`;
@@ -38,7 +39,7 @@ const Home2 = () => {
 
     try {
       const uId = usrCredential._id;
-      const bd = {role:"OTH",status:ReqType}
+      const bd = {userId: uId,role:"OTH",status:ReqType}
       return await axios.post(Url, bd)
         .then((res) => {
           if (res.status == 200) {
@@ -115,7 +116,7 @@ const Home2 = () => {
         {
           reqfoodData.map((data) => {
 
-          return (<TouchableOpacity onPress={() => { navigation.navigate("CheckInfo",{params:data})}} style={[styles.reqBox, styles.shadow,data.Status == "Accept" && {borderColor:"lightgreen",backgroundColor: "#39ac73"}]} key={data._id} >
+          return (<TouchableOpacity onPress={() => { navigation.navigate("CheckInfo",{params:data,othShow:true,deliveryStatus:ReqType == "Delivered" ? true :false})}} style={[styles.reqBox, styles.shadow,data.Status == "Accept" && {borderColor:"lightgreen",backgroundColor: "#39ac73"}]} key={data._id} >
           <View style = {styles.label}>
           <ImageBackground source={Ribbion} style={styles.Ribbionimage}>
             <Text style ={{color:"white",fontWeight:'600',transform:[{rotateZ:"45deg"},{translateX:5},{translateY:-13}]}} >{data.Role}</Text>

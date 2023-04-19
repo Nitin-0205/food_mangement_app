@@ -219,6 +219,9 @@ export default function RestoHome() {
         <Text style={styles.optxt}>NGO's</Text>
       </LinearGradient>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => {
+              navigation.navigate("Profile");
+            }}>
       <LinearGradient
         colors={["#e65c00", "#ffa366", "#ffad33"]}
         style={[styles.loweroptions, styles.shadow]}
@@ -231,6 +234,7 @@ export default function RestoHome() {
         </View>
         <Text style={styles.optxt}>Update profile</Text>
       </LinearGradient>
+      </TouchableOpacity>
     </View>
   );
 }

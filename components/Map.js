@@ -20,8 +20,8 @@ const Map = ({ route }) => {
 	const GOOGLE_API_KEY = "AIzaSyBPsF9meOyA8d6GtpMR6TTvF4hPaetULUs";
 	const mapRef = useRef();
 	const [dropLocation, setdropLocation] = useState({
-		latitude: 19.443,
-		longitude: 73.936,
+		latitude: 19.433,
+		longitude: 73.939,
 	});
 	const [pickUpLocation, setpickUpLocation] = useState({
 		latitude: 19.443,
@@ -33,13 +33,13 @@ const Map = ({ route }) => {
 	const geoCodeLocation = async (locate) => {
 		// let geoCodeAdd = await Location.geocodeAsync(`${locate.address}`);
 		setdropLocation({latitude:locate.address.geometry.location.lat,longitude:locate.address.geometry.location.lng})
-		console.log(locate.address.geometry.location)
+		console.log(locate.address)
 	}
 
 	const getPicklocate = () => {
 		const mapCordinates = route?.params?.params;
-		console.log("param",mapCordinates.coords);
-		setpickUpLocation(mapCordinates.coords);
+		// console.log("param",mapCordinates);
+		setpickUpLocation(mapCordinates);
 	};
 
 	const getData = async () => {
@@ -48,7 +48,7 @@ const Map = ({ route }) => {
 				.then(value => {
 					if (value != null) {
 						var datavalue = JSON.parse(value);
-						console.log("Credential",value)
+						// console.log("Credential",value)
 						geoCodeLocation(datavalue)
 					}
 				})
@@ -127,6 +127,8 @@ const Map = ({ route }) => {
 			<MapView
 				style={styles.map}
 				ref={mapRef}
+				showsCompass={true}
+				showsUserLocation={true}
 				initialRegion={{
 					latitude: dropLocation.latitude,
 					longitude: dropLocation.longitude,
@@ -135,26 +137,20 @@ const Map = ({ route }) => {
 				}}
 			>
 				<MapViewDirections
-					origin={{
-						latitude: dropLocation.latitude,
-						longitude: dropLocation.longitude,
-					}}
-					destination={{
-						latitude: pickUpLocation.latitude,
-						longitude: pickUpLocation.longitude,
-					}}
+					origin={dropLocation}
+					destination={pickUpLocation}
 					apikey={GOOGLE_API_KEY}
 					strokeWidth={3}
 					strokeColor="red"
 					optimizeWaypoints={true}
 					onReady={(result) => {
-						console.log(result)
+						// console.log("result",result)
 						setMapDisTime({
 							...mapDistTime,
 							distance: result.distance.toString(),
 							duration: result.duration.toString(),
-							pickAddress: result.legs[0].end_address,
-							dropAddress: result.legs[0].start_address,
+							pickAddress: result.legs[0].end_address.substring(9, 80),
+							dropAddress: result.legs[0].start_address.substring(9, 80),
 						});
 
 						console.log(result.legs[0]);
@@ -171,10 +167,7 @@ const Map = ({ route }) => {
 				<Marker
 					dropLocationColor={"slategreen"}
 					title={"Donar"}
-					coordinate={{
-						latitude: pickUpLocation.latitude,
-						longitude: pickUpLocation.longitude,
-					}}
+					coordinate={pickUpLocation}
 				>
 					<FontAwesomeIcon
 						size={28}

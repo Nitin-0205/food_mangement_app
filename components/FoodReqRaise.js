@@ -11,7 +11,7 @@ import MapView, { Marker } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete"
-
+import api from './url';
 
 const GOOGLE_API_KEY = "AIzaSyBPsF9meOyA8d6GtpMR6TTvF4hPaetULUs";
 
@@ -29,13 +29,12 @@ const FoodReqRaise = ({ navigation }) => {
 
   const [errmsg, seterrormsg] = useState(null)
 
-  function resetFunc() {
-    setEmpdetail({});
-  }
   const [vehicleOpt, setVehicleOpt] = useState({ type: ["Two Wheeler", "Car", "Van", "Truck"], icon: [faMotorcycle, faCarSide, faVanShuttle, faTruck], checked: 0 })
   const [donatTypOpt, setdonatTypOpt] = useState({ type: ["People", "Animal", "Agriculture"], icon: [faPeopleGroup, faShieldDog, faWheatAlt], checked: 0 })
 
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`
+  // axios.defaults.baseURL = `https://fwm-backend.onrender.com`
+  axios.defaults.baseURL = api.defaults.baseURL;
+
 
   const url = `/food`;
   const HandlePress = async () => {
@@ -61,7 +60,7 @@ const FoodReqRaise = ({ navigation }) => {
             if (res.status == 200) {
               alert(res.data.msg)
               navigation.navigate("Home")
-              setEmpdetail({ EmpId: "", Name: "", Contact: "" });
+              foodDetail({ EmpId: "", Name: "", Contact: "" });
 
             } else {
               seterrormsg(res.data.error);
@@ -141,7 +140,7 @@ const FoodReqRaise = ({ navigation }) => {
   AsyncStorage.getItem("UserLoginCredentials").then((result) => { setuserCredential(result) }).catch((err) => { console.log(err) })
   return (
     <View style={styles.container}>
-      <View style={{ marginTop:20,height:70, width: "86%",alignSelf:"center",position:"relative", zIndex: 100 ,backgroundColor:"red"}}>
+      <View style={{ marginTop:20,height:70, width: "86%",alignSelf:"center",position:"relative", zIndex: 100 }}>
         <Text style={[styles.subConTitle,{zIndex:20}]}>Address</Text>
 
         <GooglePlacesAutocomplete
@@ -256,12 +255,6 @@ const FoodReqRaise = ({ navigation }) => {
 
         </View>
 
-        <View style={styles.subContainer}>
-          <Text style={styles.subConTitle}>Address</Text>
-          <View style={[styles.subConBox, { flexDirection: 'row', alignItems: "center", justifyContent: "center" }]}>
-            <TextInput multiline numberOfLines={3} style={{ backgroundColor: "#ffe6ff", width: "100%", borderRadius: 3, textAlignVertical: "top", padding: 6, fontSize: 18, color: "royalblue" }} value={Address} onChangeText={(add) => { setAddress(add); }}></TextInput>
-          </View>
-        </View>
 
         <View style={styles.btnContainer}>
           <TouchableOpacity onPress={HandlePress}><Text style={styles.savbtn} >Save Detail</Text></TouchableOpacity>

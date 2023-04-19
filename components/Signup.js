@@ -7,6 +7,7 @@ import { faIdCard } from '@fortawesome/free-regular-svg-icons';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete"
+import api from "./url"
 
 import { Dropdown } from 'react-native-element-dropdown';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -69,7 +70,7 @@ function Signup() {
 
   //   })
   // }
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+axios.defaults.baseURL = api.defaults.baseURL;
   // axios.defaults.baseURL = `http://192.168.31.203:8000/`;
 
 

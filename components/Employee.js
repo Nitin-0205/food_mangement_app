@@ -9,6 +9,7 @@ import axios from 'axios';
 import Navbar from './Navbar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from './Loading';
+import api from "./url"
 
 export default function Employee() {
 
@@ -21,7 +22,7 @@ export default function Employee() {
   const [showEmpnfo ,setshowEmpnfo] =useState(false);
 
   // axios.defaults.baseURL = `http://192.168.31.80:8000`;
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+axios.defaults.baseURL = api.defaults.baseURL;
   const getEmployeeDetail = async (usrCredential) => {
     const url = `/Employees`;
     try {

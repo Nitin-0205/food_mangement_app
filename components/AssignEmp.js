@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Animated }
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import newEmp from "../assets/newEmp.png";
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBars, faFaceGrin, faXmark,faUser } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faFaceGrin, faXmark,faUser, faArrowLeft, faArrowLeftLong } from '@fortawesome/free-solid-svg-icons';
 import Constants from 'expo-constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -10,6 +10,7 @@ import Navbar from './Navbar';
 import { useNavigation } from '@react-navigation/native';
 import Emp from "../assets/emp.gif"
 import Loading from './Loading';
+import api from "./url"
 
 
 export default function({route}){
@@ -23,8 +24,7 @@ export default function({route}){
 
   console.log(foodInfoDetail);
 
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
-    // axios.defaults.baseURL = `http://192.168.31.80:8000`;
+axios.defaults.baseURL = api.defaults.baseURL;
 
     const startLoading = () => {
       setLoading(true);
@@ -101,7 +101,7 @@ export default function({route}){
         {
           empDetail.map((emp) => {
             return (
-            <TouchableOpacity onPress ={()=>{HandlePress(emp)}} style={[styles.EmpBox,{ backgroundColor: emp.Status == "A" ? "#00b359" : "tomato",alignItems:"center"}]} key={emp.Contact} >
+            <TouchableOpacity disabled = {emp.Status == "A" ?false:true} onPress ={()=>{HandlePress(emp)}} style={[styles.EmpBox,{ backgroundColor: emp.Status == "A" ? "#00b359" : "tomato",alignItems:"center"}]} key={emp.Contact} >
               <View style={{width:80,height:80,marginRight:30,overflow:"hidden",borderRadius:50,borderColor:"white",borderWidth:3,justifyContent:"center",alignItems:"center",marginBottom:10}}>
                 {/* <FontAwesomeIcon color= "white" size = {50} icon = {faUser}> </FontAwesomeIcon> */}
                 <Image style = {{width:80,height:80}} source={Emp}></Image>
@@ -123,7 +123,8 @@ export default function({route}){
         <Text style={{fontSize:30,color:"slateblue" ,flexDirection:"row"}}> No Employee Yet !!!</Text>
         </View>)
       }
-      <TouchableOpacity style={styles.addEmpCont} onPress={HandlePress}><Image source={newEmp} style={styles.addEmp}></Image></TouchableOpacity>
+      <TouchableOpacity style={styles.addEmpCont} onPress={() => {navigation.navigate("AppIntegrated") }}><FontAwesomeIcon size={30} color="white" icon={faArrowLeftLong}></FontAwesomeIcon></TouchableOpacity>
+
     </View >
   )
 }
@@ -184,14 +185,17 @@ const styles = StyleSheet.create({
     flexDirection:"row"
   },
   addEmpCont: {
-    width: 60,
-    height: 60,
+    width: 55,
+    height: 55,
     position: "absolute",
     bottom: 20,
     right: 20,
-    backgroundColor: "royalblue",
-    borderRadius: 30,
-    borderColor: "royalblue",
+
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "lightgreen",
+    borderRadius: 10,
+    borderColor: "gray",
     borderWidth: 1,
     padding: 5,
   },

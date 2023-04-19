@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import api from "./url"
 
 const GOOGLE_API_KEY = "AIzaSyBPsF9meOyA8d6GtpMR6TTvF4hPaetULUs";
 
@@ -39,7 +40,7 @@ const RestoReq = () => {
 
 
   // axios.defaults.baseURL = `http://192.168.31.203:8000`;
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+axios.defaults.baseURL = api.defaults.baseURL;
 
 
   const HandlePress = async () => {

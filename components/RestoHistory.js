@@ -9,6 +9,7 @@ import { faCalendar, faCheckCircle, faStickyNote } from '@fortawesome/free-regul
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import Ribbion from '../assets/rbnLabel.png'
+import api from "./url"
 
 
 
@@ -33,7 +34,7 @@ export default function RestoHistory() {
   };
   console.log("Main Resto Function ")
 
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+axios.defaults.baseURL = api.defaults.baseURL;
 
   const getReqData = async (usrCredential) => {
     const Url = `/getfood`;
@@ -108,7 +109,7 @@ export default function RestoHistory() {
             {
           reqfoodData.map((data) => {
             console.log(data)
-          return (<TouchableOpacity onPress={() => { navigation.navigate("CheckInfo",{params:data})}} style={[styles.reqBox, styles.shadow,data.Status == "Accept" && {borderColor:"lightgreen",backgroundColor: "#39ac73"}]} key={data._id} >
+          return (<TouchableOpacity onPress={() => { navigation.navigate("RestoCheckInfo",{params:data,deliveryStatus:false})}} style={[styles.reqBox, styles.shadow,data.Status == "Delivered" && {borderColor:"#00e6e6",backgroundColor: "#008080"},styles.shadow,data.Status == "Accept" && {borderColor:"lightgreen",backgroundColor: "#39ac73"}]} key={data._id} >
                     <View style = {styles.label}>
                     <ImageBackground source={Ribbion} style={styles.Ribbionimage}>
                       <Text style ={{color:"white",fontWeight:'600',transform:[{rotateZ:"45deg"},{translateX:5},{translateY:-13}]}} >{data.Role}</Text>
@@ -116,13 +117,13 @@ export default function RestoHistory() {
                     </View>
               <View style={styles.box1}>
                 <Text style={styles.reqId}>RequestId: {data._id}</Text>
-                <Text style={styles.reqDetail}><Text style={{ color:data.Status == "Pending"?'tomato':"lightgreen", fontWeight: "700" }}><FontAwesomeIcon color='#e6f2ff' size={11} icon = {faUserAlt}></FontAwesomeIcon> Name : </Text>{data.Name}</Text>
-                <Text style={styles.reqDetail}><Text style={{ color: data.Status == "Pending"?'tomato':"lightgreen", fontWeight: "700" }}><FontAwesomeIcon color='#e6f2ff' size={11} icon = {faListNumeric}></FontAwesomeIcon> FeedCount : </Text> {data.Feedcount}</Text>
-                <Text style={styles.reqDetail}><Text style={{ color: data.Status == "Pending"?'tomato':"lightgreen", fontWeight: "700" }}><FontAwesomeIcon color='#e6f2ff' size={11} icon = {faCity}></FontAwesomeIcon> City : </Text> {data.City}</Text>
+                <Text style={styles.reqDetail}><Text style={[data.Status == "Pending"&&{color:'#e60000'},data.Status == "Accept"&&{color:'lightgreen'},data.Status == "Delivered"&&{color:'#00e6e6'},{ fontWeight: "700" }]}><FontAwesomeIcon color='#e6f2ff' size={11} icon = {faUserAlt}></FontAwesomeIcon> Name : </Text>{data.Name}</Text>
+                <Text style={styles.reqDetail}><Text style={[data.Status == "Pending"&&{color:'#e60000'},data.Status == "Accept"&&{color:'lightgreen'},data.Status == "Delivered"&&{color:'#00e6e6'},{ fontWeight: "700" }]}><FontAwesomeIcon color='#e6f2ff' size={11} icon = {faListNumeric}></FontAwesomeIcon> FeedCount : </Text> {data.Feedcount}</Text>
+                <Text style={styles.reqDetail}><Text style={[data.Status == "Pending"&&{color:'#e60000'},data.Status == "Accept"&&{color:'lightgreen'},data.Status == "Delivered"&&{color:'#00e6e6'},{ fontWeight: "700" }]}><FontAwesomeIcon color='#e6f2ff' size={11} icon = {faCity}></FontAwesomeIcon> City : </Text> {data.City}</Text>
               </View>
               <View style={styles.box2}>
                 {/* <TouchableOpacity><Text style={[styles.reqStateBtn, { color: data.Status == "Pending" ? "red" : "green" }]}>{data.Status}</Text></TouchableOpacity> */}
-                <Text style={[styles.date,data.Status == "Accept" && {color:"lightgreen"}]}><FontAwesomeIcon color={data.Status == "Pending"?'tomato':"white"} size={10} icon = {faCalendarAlt}></FontAwesomeIcon> {data.Date}  <FontAwesomeIcon color={data.Status == "Pending"?'tomato':"white"} size={10} icon = {faStopwatch}></FontAwesomeIcon>{data.Time}</Text>
+                <Text style={[styles.date,data.Status == "Accept" && {color:"lightgreen"},styles.date,data.Status == "Delivered" && {color:"#00e6e6"}]}><FontAwesomeIcon color={data.Status == "Pending"?'tomato':"white"} size={10} icon = {faCalendarAlt}></FontAwesomeIcon> {data.Date}  <FontAwesomeIcon color={data.Status == "Pending"?'tomato':"white"} size={10} icon = {faStopwatch}></FontAwesomeIcon>{data.Time}</Text>
               </View>
             </TouchableOpacity>
           )

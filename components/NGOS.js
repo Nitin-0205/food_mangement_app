@@ -9,6 +9,7 @@ import axios from 'axios';
 import Navbar from './Navbar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from './Loading';
+import api from "./url"
 
 export default function NGOS() {
 
@@ -18,7 +19,7 @@ export default function NGOS() {
   const [loading, setLoading] = useState(false);
 
   // axios.defaults.baseURL = `http://192.168.31.80:8000`;
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+axios.defaults.baseURL = api.defaults.baseURL;
   const HandleNgoList = async () => {
     const url = `/ngos`;
     try {
@@ -60,10 +61,10 @@ export default function NGOS() {
         ):(ngoDetail.length > 0 ? <ScrollView style={styles.detailContainer}>
             
         {
-          ngoDetail.map((ngo) => {
+          ngoDetail.map((ngo,ind) => {
             console.log(ngo)
             return (
-            <TouchableOpacity style={[styles.EmpBox]} key={ngo.Contact} onPress = {()=>{console.log(ngo)}}>
+            <TouchableOpacity style={[styles.EmpBox]} key={ind} onPress = {()=>{console.log(ngo)}}>
               <View style={{width:80,height:80,marginRight:30,overflow:"hidden",borderRadius:50,borderColor:"#e67300",borderWidth:3,justifyContent:"center",alignItems:"center",marginBottom:10}}>
                 {/* <FontAwesomeIcon color= "white" size = {50} icon = {faUser}> </FontAwesomeIcon> */}
                 <Image style = {{width:80,height:80}} source={Emp}></Image>
@@ -85,9 +86,11 @@ export default function NGOS() {
         <Text style={{fontSize:30,color:"slateblue" ,flexDirection:"row"}}> No Employee Yet !!!</Text>
         </View>)
       }
-      <TouchableOpacity style={styles.addEmpCont} onPress={() => { navigation.navigate("RestoHome") }}>
+      {/* <TouchableOpacity style={styles.addEmpCont} onPress={() => { navigation.navigate("RestoHome") }}>
       <FontAwesomeIcon  color={"tomato"} size={35} icon={faArrowLeftLong}></FontAwesomeIcon>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
+      <TouchableOpacity style={styles.addEmpCont} onPress={() => { navigation.navigate("RestoHome") }}><FontAwesomeIcon size={30} color="white" icon={faArrowLeftLong}></FontAwesomeIcon></TouchableOpacity>
+
     </View >
   )
 }
@@ -147,15 +150,18 @@ const styles = StyleSheet.create({
     flexDirection:"row"
   },
   addEmpCont: {
-    width: 60,
-    height: 60,
+    width: 55,
+    height: 55,
     position: "absolute",
     bottom: 20,
     right: 20,
-    backgroundColor: "azure",
-    borderRadius: 30,
-    borderColor: "lightgray",
-    borderWidth: 2,
+
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "lightgreen",
+    borderRadius: 10,
+    borderColor: "gray",
+    borderWidth: 1,
     padding: 5,
   },
   addEmp: {

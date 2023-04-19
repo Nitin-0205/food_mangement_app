@@ -15,6 +15,7 @@ import MapViewDirections from "react-native-maps-directions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Location from "expo-location";
 import axios from "axios";
+import api from "./url"
 
 const RestoMap = ({ route }) => {
   const [location, setLocation] = useState(null);
@@ -48,7 +49,7 @@ const RestoMap = ({ route }) => {
     });
   };
 
-  axios.defaults.baseURL = `https://fwm-backend.onrender.com`;
+axios.defaults.baseURL = api.defaults.baseURL;
   const HandleNgoList = async () => {
     const url = `/ngos`;
     try {
@@ -86,10 +87,6 @@ const RestoMap = ({ route }) => {
     // }
     let location = await Location.getCurrentPositionAsync({});
     setpickUpLocation(location.coords);
-    console.log(location.coords);
-
-    console.log("Longitude", location?.coords?.longitude);
-    console.log("Latitude", location?.coords?.latitude);
   };
 
   //   const ReversegeoCodeToLocation = async ()=>{
@@ -151,12 +148,16 @@ const RestoMap = ({ route }) => {
       <MapView
         style={styles.map}
         ref={mapRef}
+        showsCompass ={true}
+        showsUserLocation = {true}
         initialRegion={{
           latitude: dropLocation?.latitude,
           longitude: dropLocation?.longitude,
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
+        onRegionChange={(e) => { console.log(e) }}
+        
         provider="google"
       >
         <Marker

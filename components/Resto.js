@@ -7,6 +7,8 @@ import RestoHome from './RestoHome';
 import RestoHistory from './RestoHistory';
 import RestoReq from './RestoReq';
 import NGOS from './NGOS';
+import Profile from './Profile';
+import RestoCheckInfo from "./RestoCheckInfo";
 
 import RestoMap from './RestoMap';
 import  {CredentialContext} from './CredentialContext'
@@ -36,7 +38,8 @@ export default function Resto() {
             <Tab.Screen name="RestoReq" component={RestoReq} options={{headerShown:false}}></Tab.Screen>
             <Tab.Screen name="RestoHistory" component={RestoHistory} options={{headerShown:false}}></Tab.Screen>
             <Tab.Screen name="NGOS" component={NGOS} options={{headerShown:false}}></Tab.Screen>
-
+            <Tab.Screen name="Profile" component={Profile} options={{headerShown:false}}></Tab.Screen>
+            <Tab.Screen name="RestoCheckInfo" component={RestoCheckInfo} options={{headerShown:false}}></Tab.Screen>
           </Tab.Navigator>
     </SafeAreaView>
   );
